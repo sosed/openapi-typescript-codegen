@@ -1,0 +1,727 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "description": "Site API на базе OAS3",
+      "url": "http://lk.cm.local/api/site/"
+    }
+  ],
+  "info": {
+    "title": "Comments: работа с комментариями",
+    "version": "1.0.0",
+    "description": "**Comments-API CarMarket** — это группа API-методов, которые используются\nдля получения (в том числе используя пагинацию), редактирования и удаления комментариев в контексте StockCar\n**Внимание** эти же методы используются (дублируются) и в Mobile API!\n\n"
+  },
+  "tags": [
+    {
+      "name": "Комментарии",
+      "description": "Список операций для работы с комментариями в контексте авторизованного пользователя.\n"
+    }
+  ],
+  "paths": {
+    "/stock-cars/{id}/comments": {
+      "get": {
+        "tags": [
+          "Комментарии"
+        ],
+        "summary": "Получение списка комментариев по идентификатору стокового автомобиля",
+        "operationId": "getCommentsByStockCarId",
+        "description": "Получение списка `CommentItem`\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор стокового автомобиля\n",
+            "required": true,
+            "schema": {
+              "title": "Числовой идентификатор",
+              "description": "Уникальный идентификатор объекта",
+              "type": "integer",
+              "maximum": 2147483647,
+              "minimum": 1,
+              "example": 5,
+              "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/ObjectId"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lastFetchedCommentItemId",
+            "description": "Идентификатор последнего раннее полученного комментария. Используется как курсор для пагинации.\n",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 45
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comments",
+            "headers": {
+              "X-Pagination-Till-End": {
+                "description": "Сколько объектов осталось загрузить. По сути это `PaginationTotalCount` минус число элементов, которые уже загрузились ранее. Полезно для случаев, когда пользователю не надо знать о созданных, в момент его сессии новых объектов. Пользователь будет получать кол-во старых объектов, которых у него еще нет. Благодаря `PaginationTillEnd` при пагинации не будут происходить коллизии, т.е. он не увидет повторно один и тот же объект на другой странице.\n",
+                "schema": {
+                  "type": "integer",
+                  "example": 12,
+                  "x-origin-$ref": "/openapi/common/models/headers.json#/components/schemas/PaginationTillEnd"
+                }
+              },
+              "X-Pagination-Per-Page": {
+                "schema": {
+                  "description": "Количество объектов на странице",
+                  "type": "integer",
+                  "example": 25,
+                  "x-origin-$ref": "/openapi/common/models/headers.json#/components/schemas/PaginationPerPage"
+                }
+              },
+              "X-Manage-Period-Seconds": {
+                "schema": {
+                  "description": "Разрешенное время на удаление/редактированиe\nкомментария в секундах с момента создания объекта\n",
+                  "type": "integer",
+                  "example": 900
+                }
+              },
+              "X-Manage-Complete-Period-Seconds": {
+                "schema": {
+                  "description": "Время в секундах, которое дает пользователю завершить начатое редактирование/удаления объекта.\nПеременная нужна для фронтенда, чтобы скрывать контролы.\nНапример: X-Manage-Period-Seconds = 15 минут, X-Manage-Complete-Period-Seconds = 5 минут,\nтогда пользователю будет дано время 15-5=10 минут на то, чтобы начать редактировать/удалять.\nЕсли пользователь начал редактировать объект, то даем ему время на отправку\nизменений еще на 5 минут, т.е на X-Manage-Complete-Period-Seconds\n",
+                  "type": "integer",
+                  "example": 300
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "comments"
+                  ],
+                  "properties": {
+                    "comments": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "$ref": "#/components/schemas/CommentItem",
+                        "x-origin-$ref": "/openapi/site/stock-cars/models/comment-item.json#/components/schemas/CommentItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "404": {
+            "$ref": "#/components/schemas/response404",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response404"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Комментарии"
+        ],
+        "summary": "Создание объекта `CommentItem`",
+        "operationId": "createCommentItemByStockCarId",
+        "description": "Создание `CommentItem`\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор стокового автомобиля\n",
+            "required": true,
+            "schema": {
+              "title": "Числовой идентификатор",
+              "description": "Уникальный идентификатор объекта",
+              "type": "integer",
+              "maximum": 2147483647,
+              "minimum": 1,
+              "example": 5,
+              "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/ObjectId"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "commentItem"
+                ],
+                "properties": {
+                  "commentItem": {
+                    "$ref": "#/components/schemas/CommentItem",
+                    "x-origin-$ref": "/openapi/site/stock-cars/models/comment-item.json#/components/schemas/CommentItem"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Объект `CommentItem` сохранен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commentItem"
+                  ],
+                  "properties": {
+                    "commentItem": {
+                      "$ref": "#/components/schemas/CommentItem",
+                      "x-origin-$ref": "/openapi/site/stock-cars/models/comment-item.json#/components/schemas/CommentItem"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "404": {
+            "$ref": "#/components/schemas/response404",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response404"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    },
+    "/stock-cars/{id}/comments/{commentId}": {
+      "put": {
+        "tags": [
+          "Комментарии"
+        ],
+        "summary": "Обновление `CommentItem`",
+        "operationId": "updateCommentItemById",
+        "description": "Обновление `CommentItem`\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор стокового автомобиля\n",
+            "required": true,
+            "schema": {
+              "title": "Числовой идентификатор",
+              "description": "Уникальный идентификатор объекта",
+              "type": "integer",
+              "maximum": 2147483647,
+              "minimum": 1,
+              "example": 5,
+              "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/ObjectId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "commentId",
+            "description": "Идентификатор комментария\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 45
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "commentItem"
+                ],
+                "properties": {
+                  "commentItem": {
+                    "$ref": "#/components/schemas/CommentItem",
+                    "x-origin-$ref": "/openapi/site/stock-cars/models/comment-item.json#/components/schemas/CommentItem"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Объект `CommentItem` сохранен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commentItem"
+                  ],
+                  "properties": {
+                    "commentItem": {
+                      "$ref": "#/components/schemas/CommentItem",
+                      "x-origin-$ref": "/openapi/site/stock-cars/models/comment-item.json#/components/schemas/CommentItem"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "404": {
+            "$ref": "#/components/schemas/response404",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response404"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Комментарии"
+        ],
+        "summary": "Удаление `CommentItem`",
+        "operationId": "deleteCommentItemById",
+        "description": "Удаление `CommentItem`\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор стокового автомобиля\n",
+            "required": true,
+            "schema": {
+              "title": "Числовой идентификатор",
+              "description": "Уникальный идентификатор объекта",
+              "type": "integer",
+              "maximum": 2147483647,
+              "minimum": 1,
+              "example": 5,
+              "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/ObjectId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "commentId",
+            "description": "Идентификатор комментария\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 45
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Объект `CommentItem` удален"
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "404": {
+            "$ref": "#/components/schemas/response404",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response404"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserInfo": {
+        "title": "UserInfo",
+        "description": "Компактная модель данных пользователя. (deprecated)\n",
+        "type": "object",
+        "deprecated": true,
+        "properties": {
+          "id": {
+            "title": "Числовой идентификатор",
+            "description": "Уникальный идентификатор объекта",
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "example": 5,
+            "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/ObjectId"
+          },
+          "phone": {
+            "title": "Phone",
+            "description": "Номер телефона в российском формате, маска пропускает следующие форматы:\n* +7(912)2517699\n* 8(912)2517699\n* 7(912)2517699\n* 7-912-251-76-99\n* 8-(912)-251-76-99\n* 9122517699\n* 7(912)-251-7699\n",
+            "type": "string",
+            "pattern": "^((8|\\+8|7|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?(\\d{3}[-\\s]{1}\\d{2}[-\\s]{1}\\d{2}|\\d{3}[-\\s]{1}\\d{1}[-\\s]{1}\\d{3}|\\d{3}[-\\s]{1}\\d{4}|\\d{7})$",
+            "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/Phone"
+          },
+          "name": {
+            "type": "string",
+            "description": "Полное имя пользователя",
+            "example": "Иванов Петр"
+          }
+        }
+      },
+      "CommentItem": {
+        "title": "CommentItem",
+        "description": "Модель комментария\n",
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "title": "Числовой идентификатор",
+            "description": "Уникальный идентификатор объекта",
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "example": 5,
+            "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/ObjectId"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/UserInfo",
+            "x-origin-$ref": "/openapi/site/users/models/users.json#/components/schemas/UserInfo"
+          },
+          "createdAt": {
+            "title": "CreatedAt",
+            "description": "Дата и время создания объекта в формате date-time [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)",
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-03-10T02:40:00.000Z",
+            "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/CreatedAt"
+          },
+          "updatedAt": {
+            "title": "UpdatedAt",
+            "description": "Дата и время обновления объекта в формате date-time [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)",
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-03-10T02:40:00.000Z",
+            "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/UpdatedAt"
+          },
+          "message": {
+            "description": "Свободный комментарий в карточке автомобиля на складе. Может использоваться для указания произвольной информации об авто, операциях производимых с ним и прочего.\n",
+            "type": "string",
+            "example": "Надо осбудить с клиентом детали при встрече",
+            "minLength": 1,
+            "maxLength": 10000,
+            "errorMessage": {
+              "minLength": "Комментарий не может быть пустым",
+              "maxLength": "Комментарий должен быть не более 10000 символов"
+            }
+          }
+        }
+      },
+      "JsonError": {
+        "type": "object",
+        "description": "Данные об ошибке валидации JSON-структуры",
+        "required": [
+          "originalMessage",
+          "jsonPointer"
+        ],
+        "properties": {
+          "originalMessage": {
+            "description": "Оригинальная ошибка от JSON Schema или другой системы валидации",
+            "type": "string",
+            "example": "Value should match with pattern /^[\\\\wа-яА-Я\\\\-\\\\s]+$/"
+          },
+          "message": {
+            "description": "Человеко-понятное сообщение об ошибке (если было указано)",
+            "type": "string",
+            "example": "Укажите корректную фамилию"
+          },
+          "jsonPointer": {
+            "description": "Путь до атрибута с ошибкой во вложенной структуре JSON-объекта",
+            "type": "string",
+            "example": "#/personalData/profile/name"
+          }
+        }
+      },
+      "PromotionError": {
+        "title": "PromotionError",
+        "description": "Модель ошибки при получении услуги продвижения.\n",
+        "type": "object",
+        "properties": {
+          "message": {
+            "description": "Текст ошибки\n",
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "description": "Тип ошибки unknown - С классифайда пришла ошибка, которую stock-publisher не смог типизировать.  badResponse - Или если мы не можем получить на монолите ответ от stock-publisher: упали по таймауту (400 promotion bad request)\n              Или если мы получили плохой ответ от сток-паблишера (5xx promotion bad response)\nstockCarNotFound - Сток-паблишер не нашел авто в int.api по id notReadyForPublication - Авто стал не готов к публикации: монолит почему-то не отдаёт сток-паблишеру авто concurrencyError - Два пользователя одновременно применяют услугу. Один пользователь применил услугу, а у второго не получилось default - Стандартные ошибки monolith (на фронт вообще тип ошибки не пришел) appliedByPackageTurboSale - Когда дизейблятся связанные услуги с текущей применённой. Например, применяем турбо-продажу, дизейблятся спец и премиум.  alreadyOtherXApplied - Когда применяем х2 на 1 день, дизейблятся остальные услуги Х. appliedByClassified - Когда услуга применена на классифайде, а не через СМЕ. Мы видим, что она применена, но не знаем до какого момента она действует, и не знаем, кто её применил. emptyCredentials - Не заполнены учетные данные для класифайда invalidCredentials - Неверные учетные данные для класифайда classifiedUnavailable - Транспортная ошибка при попытке связи с класифайдом advertNotFound - Авто еще не опубликовано на класифайде notEnoughMoney - Недостаточно средств permissionDenied - Недостаточно прав\n",
+            "type": "string",
+            "default": "default",
+            "enum": [
+              "unknown",
+              "badResponse",
+              "stockCarNotFound",
+              "notReadyForPublication",
+              "concurrencyError",
+              "default",
+              "appliedByPackageTurboSale",
+              "alreadyOtherXApplied",
+              "appliedByClassified",
+              "emptyCredentials",
+              "invalidCredentials",
+              "classifiedUnavailable",
+              "advertNotFound",
+              "notEnoughMoney",
+              "permissionDenied"
+            ]
+          }
+        }
+      },
+      "HttpErrorBadRequest": {
+        "type": "object",
+        "description": "Тело стандартного ответа API при ошибке 400",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string",
+            "example": "Данные имеют неправильный формат"
+          },
+          "type": {
+            "description": "Тип ошибки, который позволяет отличить *синтаксическую ошибку* данных\n(то есть вызванную недоработками в Клиент-приложении),\nот *семантической*.\n\nПредполагается, что Клиент-приложение должно\nвыполнять проверку синтаксического соответствия самостоятельно.\nПоэтому получение синтаксической ошибки с сервера является нештатной\nситуацией, в отличие от семантической, которая является частью процесса\nпользовательского ввода.\n",
+            "type": "string",
+            "enum": [
+              "syntax",
+              "semantic"
+            ],
+            "example": "syntax"
+          },
+          "description": {
+            "description": "Развернутая информация об ошибке",
+            "type": "string",
+            "example": "Смотрите `errors` для получения более подробной\nинформации об ошибках валидации.\n"
+          },
+          "errors": {
+            "description": "Ошибка валидации JSON-структуры",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JsonError",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/JsonError"
+            }
+          },
+          "previous": {
+            "description": "Используется для прокидывания ошибки из другого слоя или другой семантики, например из сток-паблишера\n",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PromotionError",
+                "x-origin-$ref": "/openapi/site/stock-cars/models/promotions.json#/components/schemas/PromotionError"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          }
+        }
+      },
+      "response400": {
+        "description": "Ответ от сервера о некорректности переданных данных",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpErrorBadRequest",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpErrorBadRequest"
+            }
+          }
+        }
+      },
+      "WwwAuthenticate": {
+        "type": "object",
+        "description": "Данные, которые должны возвращаться в\n[WWW-Authenticate при ошибке 401](https://tools.ietf.org/html/rfc7235#section-3.1).\n",
+        "required": [
+          "title",
+          "type",
+          "realm"
+        ],
+        "properties": {
+          "title": {
+            "description": "Заголовок",
+            "type": "string",
+            "example": "Authentication obsoleted"
+          },
+          "type": {
+            "description": "Тип автороизации, которую нужно выполнить",
+            "type": "string",
+            "example": "Bearer"
+          },
+          "realm": {
+            "description": "Тип доступа",
+            "type": "string",
+            "example": "password_grant"
+          }
+        }
+      },
+      "HttpErrorUnauthorized": {
+        "type": "object",
+        "description": "Тело стандартного ответа API при ошибке 401",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string",
+            "example": "Необходимо выполнить авторизацию"
+          },
+          "wwwAuthenticate": {
+            "$ref": "#/components/schemas/WwwAuthenticate",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/WwwAuthenticate"
+          }
+        }
+      },
+      "response401": {
+        "description": "Ответ от сервера о необходимости авторизоваться",
+        "headers": {
+          "WWW-Authenticate": {
+            "schema": {
+              "description": "Описание условия выполения авторизации",
+              "type": "string",
+              "default": "WWW-Authenticate: Bearer realm=\"password_grant\"",
+              "example": "WWW-Authenticate: Bearer realm=\"password_grant\""
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpErrorUnauthorized",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpErrorUnauthorized"
+            }
+          }
+        }
+      },
+      "HttpErrorForbidden": {
+        "type": "object",
+        "description": "Тело стандартного ответа при ошибке 403",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string",
+            "example": "Доступ к данному разделу API ограничен"
+          },
+          "description": {
+            "description": "Развернутая информация об ошибке",
+            "type": "string",
+            "example": "Доступ к этим данным разрешен только для администраторов.\nОбратитесь к вашему администратору для получения дополнительных прав.\n"
+          }
+        }
+      },
+      "response403": {
+        "description": "Доступ к API или запрашиваемым данным не разрешен",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpErrorForbidden",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpErrorForbidden"
+            }
+          }
+        }
+      },
+      "HttpErrorNotFound": {
+        "type": "object",
+        "description": "Тело стандартного ответа при ошибке 404",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string"
+          },
+          "description": {
+            "description": "Развернутое описание ошибки",
+            "type": "string",
+            "example": "Запрашиваемый ресурс не найден\n"
+          }
+        }
+      },
+      "response404": {
+        "description": "Запрашиваемый ресурс не найден",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpErrorNotFound",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpErrorNotFound"
+            }
+          }
+        }
+      },
+      "HttpServerError": {
+        "type": "object",
+        "description": "Тело стандартного ответа при ошибке 500 Обычно, это ошибка на стороне API\n",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string",
+            "example": "Запрос не может быть обработан из-за внутренних экзистенциальных проблем сервера"
+          }
+        }
+      },
+      "response500": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpServerError",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpServerError"
+            }
+          }
+        }
+      }
+    }
+  }
+}

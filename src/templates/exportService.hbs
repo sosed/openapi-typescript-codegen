@@ -20,11 +20,37 @@ import { API_ERROR_HANDLER, ApiErrorHandler } from '@cme/oapi3codegen/angular/ev
 
 import * as domainSchema from './stock-cars.json';
 
+export type {{{name}}}Response = {{>result}};
+
+{{#if parameters}}
+export type {{{name}}}Parameters = {
+{{#each parameters}}
+    {{{name}}}{{>isRequired}}: {{>type}};
+{{/each}}
+};
+{{/if}}
+
+{{#if parametersBody}}
+export type {{{name}}}Request = {
+{{#each parametersBody.properties}}
+    {{{name}}}{{>isRequired}}: {{>type}};
+{{/each}}
+};
+{{/if}}
+
+/**
+{{#if deprecated}}
+  * @deprecated
+{{/if}}
+{{#if description}}
+  * {{{description}}}
+{{/if}}
+ */
 @Injectable()
 export class {{{serviceName}}} extends ApiMethodBase<
-    null,
-    null,
-    null,
+    {{name}}Response,
+    {{#if parametersBody}}{{name}}Request{{else}}null{{/if}},
+    {{#if parameters}}{{name}}Parameters{{else}}null{{/if}},
     null
 > {
 
@@ -82,5 +108,3 @@ export class {{{serviceName}}} extends ApiMethodBase<
         }
     }
 }
-
-const meta = {{{ meta }}}

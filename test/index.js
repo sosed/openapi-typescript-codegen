@@ -19,29 +19,29 @@ const OpenAPI = require('../dist');
 
 async function generateV3() {
     await OpenAPI.generate({
-        input: './test/spec/dealers.json',
-        output: './test/generated/',
+        input: './test/spec/comments.json',
+        output: './test/generated/comments',
         httpClient: OpenAPI.HttpClient.XHR,
         useOptions: true,
         useUnionTypes: false,
         exportCore: false,
-        exportSchemas: true,
+        exportSchemas: false,
         exportModels: true,
         exportServices: true,
         request: './test/custom/request.ts',
     });
-    // await OpenAPI.generate({
-    //     input: './test/spec/stock-cars.json',
-    //     output: './test/generated/',
-    //     httpClient: OpenAPI.HttpClient.FETCH,
-    //     useOptions: true,
-    //     useUnionTypes: false,
-    //     exportCore: false,
-    //     exportSchemas: false,
-    //     exportModels: true,
-    //     exportServices: true,
-    //     request: './test/custom/request.ts',
-    // });
+    await OpenAPI.generate({
+        input: './test/spec/calls.json',
+        output: './test/generated/calls',
+        httpClient: OpenAPI.HttpClient.FETCH,
+        useOptions: true,
+        useUnionTypes: false,
+        exportCore: false,
+        exportSchemas: false,
+        exportModels: true,
+        exportServices: true,
+        request: './test/custom/request.ts',
+    });
 }
 
 async function generate() {

@@ -25,7 +25,7 @@ export function getOperation(openApi: OpenApi, url: string, method: string, op: 
     const serviceClassName = getServiceClassName(serviceName);
     const operationPath = getCustomOperationPath(url);
     const operationNameFallback = [_.capitalize(method), _.upperFirst(_.camelCase(operationPath))].join('');
-    const operationName = getOperationName(op.operationId || operationNameFallback);
+    const operationName = _.upperFirst(getOperationName(op.operationId || operationNameFallback));
 
     // Create a new operation object for this method.
     const operation: Operation = {
@@ -89,6 +89,7 @@ export function getOperation(openApi: OpenApi, url: string, method: string, op: 
             operation.imports.push(...operationResult.imports);
         });
     }
+    operation.parameters = operation.parameters.filter(item => item.in !== 'body' && item.in !== 'formData');
 
     return operation;
 }
