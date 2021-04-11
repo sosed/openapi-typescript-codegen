@@ -5,6 +5,7 @@ import { HttpClient } from '../HttpClient';
 import { writeFile } from './fileSystem';
 import { format } from './format';
 import { Templates } from './registerHandlebarTemplates';
+import { getServiceClassName } from '../openApi/v3/parser/getServiceClassName';
 
 const VERSION_TEMPLATE_STRING = 'OpenAPI.VERSION';
 
@@ -19,15 +20,40 @@ const VERSION_TEMPLATE_STRING = 'OpenAPI.VERSION';
  */
 export async function writeClientServices(services: Service[], templates: Templates, outputPath: string, httpClient: HttpClient, useUnionTypes: boolean, useOptions: boolean): Promise<void> {
     for (const service of services) {
-        const file = resolve(outputPath, `${service.name}.ts`);
         const useVersion = service.operations.some(operation => operation.path.includes(VERSION_TEMPLATE_STRING));
-        const templateResult = templates.exports.service({
-            ...service,
-            httpClient,
-            useUnionTypes,
-            useVersion,
-            useOptions,
-        });
-        await writeFile(file, format(templateResult));
+        for (const operation of service.operations) {
+            const fileName = getServiceFileName(operation.name);
+            const file = resolve(outputPath, `${fileName}.ts`);
+            const ctx = {
+                ...operation,
+                serviceName: getServiceClassName(operation.name),
+                imports: Array.from(new Set(operation.imports)),
+                queryParams: operation.parameters
+                    .filter(item => item.in === 'query')
+                    .map(item => '\'' + item.name + '\''),
+                httpClient,
+                useUnionTypes,
+                useVersion,
+                useOptions,
+            };
+            const templateResult = templates.exports.service({
+                ...ctx,
+                meta: JSON.stringify(ctx, null, '  '),
+            });
+            await writeFile(file, format(templateResult));
+        }
     }
+}
+
+export function getServiceFileName(value: string): string {
+    const name = value
+        .replace(/([A-Z])([A-Z])/g, '$1-$2')
+        .replace(/([a-z])([A-Z])/g, '$1-$2')
+        .replace(/[\s_]+/g, '-')
+        .toLowerCase();
+
+    if (name && !name.endsWith('service')) {
+        return `${name}.service`;
+    }
+    return name;
 }

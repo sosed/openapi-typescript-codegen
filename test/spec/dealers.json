@@ -1,0 +1,2033 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "description": "Site API на базе OAS3",
+      "url": "http://lk.cm.local/api/site/"
+    }
+  ],
+  "info": {
+    "title": "Dealers: работа с дилерами",
+    "version": "1.0.0",
+    "description": "**Dealers-API CarMarket** — это группа API-методов, которые используются\nдля получения информации о дилере и связанных с ним сущностей\n\n"
+  },
+  "tags": [
+    {
+      "name": "Дилеры",
+      "description": "Список операций для работы с дилерами в контексте авторизованного пользователя.\n"
+    },
+    {
+      "name": "Тактики продаж",
+      "description": "Управление тактиками продаж в контексте дилера\n"
+    }
+  ],
+  "paths": {
+    "/dealers/{id}": {
+      "get": {
+        "tags": [
+          "Дилеры"
+        ],
+        "summary": "Получение `Dealer` по его идентификатору",
+        "operationId": "getDealerById",
+        "description": "Получение `Dealer` по его идентификатору\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор сущности\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dealer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "dealer": {
+                      "$ref": "#/components/schemas/Dealer",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/Dealer"
+                    },
+                    "defaultStockPublications": {
+                      "$ref": "#/components/schemas/DefaultStockPublications",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/DefaultStockPublications"
+                    },
+                    "publicationProviders": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PublicationProvider",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/PublicationProvider"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "404": {
+            "$ref": "#/components/schemas/response404",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response404"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Дилеры"
+        ],
+        "summary": "Обновление `Dealer`",
+        "operationId": "updateDealerById",
+        "description": "Обновление `Dealer`\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор стокового автомобиля\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "dealer"
+                ],
+                "properties": {
+                  "dealer": {
+                    "$ref": "#/components/schemas/Dealer",
+                    "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/Dealer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Объект `Dealer` сохранен"
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "404": {
+            "$ref": "#/components/schemas/response404",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response404"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    },
+    "/dealers": {
+      "get": {
+        "tags": [
+          "Дилеры"
+        ],
+        "summary": "Получение списка дилеров, доступных для текущего пользователя",
+        "operationId": "getDealersList",
+        "description": "Получение списка `Dealer`\n",
+        "responses": {
+          "200": {
+            "description": "Список `Dealer`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "dealers": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Dealer",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/Dealer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    },
+    "/dealers/{dealerId}/tactics": {
+      "get": {
+        "tags": [
+          "Тактики продаж"
+        ],
+        "summary": "Получение списка тактик продаж `SalesTactic` для выбранного дилера",
+        "operationId": "getSalesTacticsByDealerId",
+        "description": "Получение списка `SalesTactic` для дилера\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dealerId",
+            "description": "Идентификатор сущности дилера\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          },
+          {
+            "in": "query",
+            "name": "stockCarId",
+            "description": "Идентификатор авто в стоке, если запрос на список тактик нужен для конкретного авто (например, в случае пользователя с ролью супервизор, который просматривает авто, оцененное в салоне, к которому он имеет доступ, но поставлено в другой дилер, куда пользователь не имеет доступа)\n",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "example": 21
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список `SalesTactic`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "salesTactics": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SalesTactic",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTactic"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Тактики продаж"
+        ],
+        "summary": "Создание тактики продаж `SalesTactic` по идентификатору дилера",
+        "operationId": "createSalesTacticByDealerId",
+        "description": "Создание тактики продаж `SalesTactic` по идентификатору дилера\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dealerId",
+            "description": "Идентификатор сущности дилера\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "salesTactic",
+                  "salesTacticPeriods"
+                ],
+                "properties": {
+                  "salesTactic": {
+                    "$ref": "#/components/schemas/SalesTactic",
+                    "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTactic"
+                  },
+                  "salesTacticPeriods": {
+                    "type": "array",
+                    "nullable": false,
+                    "items": {
+                      "$ref": "#/components/schemas/SalesTacticPeriod",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTacticPeriod"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Создание объекта `SalesTactic` и массива `SalesTacticPeriod`.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Объект `SalesTactic` и массив `SalesTacticPeriod`.\n",
+                  "nullable": false,
+                  "required": [
+                    "salesTactic",
+                    "salesTacticPeriods"
+                  ],
+                  "properties": {
+                    "salesTactic": {
+                      "$ref": "#/components/schemas/SalesTactic",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTactic"
+                    },
+                    "salesTacticPeriods": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "$ref": "#/components/schemas/SalesTacticPeriod",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTacticPeriod"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    },
+    "/dealers/{dealerId}/stock-days-groups": {
+      "get": {
+        "tags": [
+          "Тактики продаж"
+        ],
+        "summary": "Получение списка `StockDaysGroup` для выбранного дилера",
+        "operationId": "getStockDaysGroupByDealerId",
+        "description": "Получение списка модели `StockDaysGroup` для дилера\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dealerId",
+            "description": "Идентификатор сущности дилера\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список `StockDaysGroup`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "stockDaysGroups"
+                  ],
+                  "properties": {
+                    "stockDaysGroups": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "$ref": "#/components/schemas/StockDaysGroup",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/StockDaysGroup"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Тактики продаж"
+        ],
+        "summary": "Обновление списка `StockDaysGroup`",
+        "operationId": "updateStockDaysGroupByDealerId",
+        "description": "Обновление группировки склада по дням\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dealerId",
+            "description": "Идентификатор сущности дилера\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "stockDaysGroups"
+                ],
+                "properties": {
+                  "stockDaysGroups": {
+                    "type": "array",
+                    "nullable": false,
+                    "items": {
+                      "$ref": "#/components/schemas/StockDaysGroup",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/StockDaysGroup"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Список `StockDaysGroup` сохранен"
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "404": {
+            "$ref": "#/components/schemas/response404",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response404"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    },
+    "/dealers/{dealerId}/tactics/{id}": {
+      "get": {
+        "tags": [
+          "Тактики продаж"
+        ],
+        "summary": "Получение тактики продаж `SalesTactic` по ее идентификатору и идентификатору дилера",
+        "operationId": "getSalesTacticByIdByDealerId",
+        "description": "Получение тактики продаж `SalesTactic` по ее идентификатору и идентификатору дилера\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dealerId",
+            "description": "Идентификатор сущности дилера\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор сущности тактики\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 21
+          },
+          {
+            "in": "query",
+            "name": "stockCarId",
+            "description": "Идентификатор авто в стоке, если запрос на список тактик нужен для конкретного авто (например, в случае пользователя с ролью супервизор, который просматривает авто, оцененное в салоне, к которому он имеет доступ, но поставлено в другой дилер, куда пользователь не имеет доступа)\n",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "example": 21
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Сущность `SalesTactic` и список `SalesTacticPeriod` для тактики",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "salesTactic",
+                    "salesTacticPeriods"
+                  ],
+                  "properties": {
+                    "salesTactic": {
+                      "$ref": "#/components/schemas/SalesTactic",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTactic"
+                    },
+                    "salesTacticPeriods": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SalesTacticPeriod",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTacticPeriod"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Тактики продаж"
+        ],
+        "summary": "Обновление тактики продаж `SalesTactic` по ее идентификатору и идентификатору дилера",
+        "operationId": "putSalesTacticByIdByDealerId",
+        "description": "Обновление тактики продаж `SalesTactic` по ее идентификатору и идентификатору дилера\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dealerId",
+            "description": "Идентификатор сущности дилера\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор сущности тактики\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 21
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "salesTactic",
+                  "salesTacticPeriods"
+                ],
+                "properties": {
+                  "salesTactic": {
+                    "$ref": "#/components/schemas/SalesTactic",
+                    "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTactic"
+                  },
+                  "salesTacticPeriods": {
+                    "type": "array",
+                    "nullable": false,
+                    "items": {
+                      "$ref": "#/components/schemas/SalesTacticPeriod",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTacticPeriod"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Получение обновлённого объекта `SalesTactic` и массива `SalesTacticPeriod`.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Объект `SalesTactic` и массив `SalesTacticPeriod`.\n",
+                  "nullable": false,
+                  "required": [
+                    "salesTactic",
+                    "salesTacticPeriods"
+                  ],
+                  "properties": {
+                    "salesTactic": {
+                      "$ref": "#/components/schemas/SalesTactic",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTactic"
+                    },
+                    "salesTacticPeriods": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "$ref": "#/components/schemas/SalesTacticPeriod",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/SalesTacticPeriod"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Тактики продаж"
+        ],
+        "summary": "Удаление тактики продаж `SalesTactic` по ее идентификатору и идентификатору дилера",
+        "operationId": "deleteSalesTacticByIdByDealerId",
+        "description": "Удаление тактики продаж `SalesTactic` по ее идентификатору и идентификатору дилера\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dealerId",
+            "description": "Идентификатор сущности дилера\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор сущности тактики\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 21
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ресурс был успешно удален."
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    },
+    "/dealers/{dealerId}/tracking-settings": {
+      "get": {
+        "tags": [
+          "Настройки отслеживания объявлений"
+        ],
+        "summary": "Получение `TrackingSettings` по идентификатору дилера",
+        "operationId": "getTrackingSettingsByDealerId",
+        "description": "Получение настроек отслеживания объявлений\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dealerId",
+            "description": "Идентификатор сущности дилера\n",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Модель `TrackingSettings`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "trackingSettings": {
+                      "$ref": "#/components/schemas/TrackingSettings",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/TrackingSettings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    },
+    "/dealers/{id}/stock-settings": {
+      "get": {
+        "description": "Комплексное получение настроек отслеживания объявлений, склада, печати ценников.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор дилера",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "dealerSources",
+                    "trackingSettings",
+                    "priceTagSettings"
+                  ],
+                  "properties": {
+                    "dealerSources": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DealerSource",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/DealerSource"
+                      }
+                    },
+                    "trackingSettings": {
+                      "$ref": "#/components/schemas/TrackingSettings",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/TrackingSettings"
+                    },
+                    "priceTagSettings": {
+                      "$ref": "#/components/schemas/PriceTagSettings",
+                      "x-origin-$ref": "/openapi/common/models/dealers/price-tag-settings.json#/components/schemas/PriceTagSettings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      },
+      "put": {
+        "description": "Комплексное обновление настроек отслеживания объявлений, склада, печати ценников.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Идентификатор дилера",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 234
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "trackingSettings",
+                  "priceTagSettings"
+                ],
+                "properties": {
+                  "trackingSettings": {
+                    "$ref": "#/components/schemas/TrackingSettings",
+                    "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/TrackingSettings"
+                  },
+                  "priceTagSettings": {
+                    "$ref": "#/components/schemas/PriceTagSettings",
+                    "x-origin-$ref": "/openapi/common/models/dealers/price-tag-settings.json#/components/schemas/PriceTagSettings"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "dealerSources",
+                    "trackingSettings",
+                    "priceTagSettings"
+                  ],
+                  "properties": {
+                    "dealerSources": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DealerSource",
+                        "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/DealerSource"
+                      }
+                    },
+                    "trackingSettings": {
+                      "$ref": "#/components/schemas/TrackingSettings",
+                      "x-origin-$ref": "/openapi/site/dealers/models/dealers.json#/components/schemas/TrackingSettings"
+                    },
+                    "priceTagSettings": {
+                      "$ref": "#/components/schemas/PriceTagSettings",
+                      "x-origin-$ref": "/openapi/common/models/dealers/price-tag-settings.json#/components/schemas/PriceTagSettings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/response400",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response400"
+          },
+          "401": {
+            "$ref": "#/components/schemas/response401",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response401"
+          },
+          "403": {
+            "$ref": "#/components/schemas/response403",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response403"
+          },
+          "500": {
+            "$ref": "#/components/schemas/response500",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/response500"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GeoType": {
+        "type": "object",
+        "description": "Объект, который содержит в себе данные о типе Geo-объекта.",
+        "required": [
+          "id",
+          "type",
+          "shortName",
+          "fullName"
+        ],
+        "properties": {
+          "id": {
+            "description": "ID типа географичесокго объекта",
+            "type": "integer",
+            "example": 101
+          },
+          "type": {
+            "description": "Тип географического объекта",
+            "type": "string",
+            "enum": [
+              "region",
+              "city"
+            ],
+            "example": "region",
+            "nullable": true
+          },
+          "shortName": {
+            "type": "string",
+            "description": "Сокращение для обозначения объекта",
+            "example": "г."
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Полное обозначение Geo-объекта",
+            "example": "Город"
+          }
+        }
+      },
+      "Point": {
+        "description": "Точка на карте (Lat/Lng)",
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+          "type": "number",
+          "nullable": true
+        },
+        "example": [
+          30.290304,
+          59.902052
+        ]
+      },
+      "Geo": {
+        "type": "object",
+        "description": "Универсальная модель для представления географических объектов (города, регионы, страны). Модель содержит в себе описания, сокращения и идентификатор. ",
+        "required": [
+          "id",
+          "type",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "description": "Уникальный ID Geo-объекта",
+            "type": "integer",
+            "example": 100223
+          },
+          "type": {
+            "$ref": "#/components/schemas/GeoType",
+            "x-origin-$ref": "/openapi/site/geo/api/geo.json#/components/schemas/GeoType"
+          },
+          "name": {
+            "type": "string",
+            "description": "Полное имя гео-объекта",
+            "example": "Санкт-Петербург"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/Point",
+            "x-origin-$ref": "/openapi/site/geo/api/geo.json#/components/schemas/Point"
+          },
+          "distance": {
+            "description": "Расстояние от центральной точки этого региона до центральной точки региона, в котором расположен дилерский центр, ID которого указан в параметре `dealerId`.",
+            "type": "number",
+            "example": 35.3290175761,
+            "nullable": true
+          },
+          "count": {
+            "description": "Общее количество объявлений в этом регионе.",
+            "type": "integer",
+            "example": 1000
+          },
+          "pathFullName": {
+            "description": "Описание местоположения",
+            "type": "string",
+            "nullable": true,
+            "example": "Московская обл, г Коломна"
+          }
+        }
+      },
+      "Dealer": {
+        "title": "Dealer",
+        "description": "Модель дилера (автосалона) клиента\n",
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "hasStockPermission",
+          "autoSaveArguesCount"
+        ],
+        "properties": {
+          "id": {
+            "title": "Числовой идентификатор",
+            "description": "Уникальный идентификатор объекта",
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "example": 5,
+            "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/ObjectId"
+          },
+          "name": {
+            "type": "string",
+            "title": "Наименование дилера",
+            "description": "Наименование дилера",
+            "example": "АвтоСпортМеталл",
+            "readOnly": true
+          },
+          "hasStockPermission": {
+            "type": "boolean",
+            "title": "Склад",
+            "description": "Доступ к функционалости \"Склад\"",
+            "example": true,
+            "readOnly": true
+          },
+          "autoSaveArguesCount": {
+            "type": "integer",
+            "title": "Количество типов доказаторов для автосохранения",
+            "example": 3,
+            "readOnly": true
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Координата (Широта)",
+            "example": 30.49596,
+            "readOnly": true
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Координата (Долгота)",
+            "example": 31.049596,
+            "readOnly": true
+          },
+          "geo": {
+            "$ref": "#/components/schemas/Geo",
+            "x-origin-$ref": "/openapi/site/geo/api/geo.json#/components/schemas/Geo"
+          },
+          "hasCallTrackingPairs": {
+            "type": "boolean",
+            "title": "Есть ли привязанные пары трекинга звонков",
+            "description": "Если у дилера есть хотя бы одна пара, для каждой машины отображается вкладка \"Звонки\"",
+            "nullable": false,
+            "example": true,
+            "readOnly": true
+          },
+          "hasEnabledPublications": {
+            "type": "boolean",
+            "title": "Публикации",
+            "description": "Наличие включенных публикаций для дилера",
+            "example": true,
+            "readonly": true,
+            "nullable": false
+          },
+          "hasEnabledOptimalStockRecommendations": {
+            "type": "boolean",
+            "title": "Рекомендации по структуре склада",
+            "description": "Наличие автосалонов продажи для определения рекомендаций по структуре склада",
+            "example": true,
+            "readonly": true,
+            "nullable": false
+          },
+          "isCustomAutoCheckReport": {
+            "type": "boolean",
+            "title": "Настройки индивидуального отчета",
+            "description": "Наличие настроенного индивидуального отчета авто-проверок",
+            "example": true,
+            "readonly": true,
+            "nullable": false
+          },
+          "isClassifiedsMockServerEnabled": {
+            "type": "boolean",
+            "title": "Мок-сервисы для публикации и услуг продвижения включены",
+            "description": "Идентификаторо включенности мок-сервисов для публикации и услуг продвижения на уровне клиента",
+            "example": true,
+            "readonly": true,
+            "nullable": false
+          },
+          "distributorDealerCode": {
+            "title": "Код ДЦ дистрибьютора",
+            "type": "string",
+            "nullable": true,
+            "description": "Код ДЦ дистрибьютора",
+            "example": "qwe123"
+          },
+          "extendedAutoChecksService": {
+            "title": "Идентификатор сервиса расширенных проверок",
+            "type": "string",
+            "nullable": false,
+            "enum": [
+              "avtocod",
+              "autoteka"
+            ]
+          }
+        }
+      },
+      "StockPublication": {
+        "title": "StockPublication",
+        "description": "Модель мета-информации о публикации в контексте автомобиля на складе\n",
+        "type": "object",
+        "required": [
+          "dealerPublicationId",
+          "status",
+          "siteId",
+          "siteName"
+        ],
+        "properties": {
+          "dealerPublicationId": {
+            "description": "ID параметров публикации автосалона\n",
+            "type": "integer",
+            "example": 1,
+            "readOnly": true
+          },
+          "status": {
+            "description": "Статус публикации (string)\n",
+            "type": "string",
+            "enum": [
+              "enabled",
+              "disabled",
+              "alwaysDisabled",
+              "alwaysEnabled"
+            ]
+          },
+          "siteId": {
+            "description": "Идентификатор сайта",
+            "type": "integer",
+            "example": 1,
+            "nullable": false
+          },
+          "siteName": {
+            "description": "Название сайта (string)",
+            "type": "string",
+            "example": "auto.ru",
+            "nullable": false
+          },
+          "allowedBrands": {
+            "deprecated": true,
+            "description": "@deprecated ### Решили избавиться от этой логики на фронтенде, теперь бэк просто не будет возвращать значения если у тачки не тот бренд Доступные бренды для публикации (если пусто - ограничений нет)\n",
+            "type": "array",
+            "items": {
+              "title": "Простое словарное значение",
+              "type": "integer",
+              "example": 354,
+              "x-dictionaryValue": true,
+              "x-origin-$ref": "/openapi/site/cars/models/equipment/params/basic.json#/components/schemas/Brand"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        }
+      },
+      "DefaultStockPublications": {
+        "title": "DefaultStockPublications",
+        "description": "Содержит данные о том, какие публикации и в каком дефолтном состоянии доступны\n",
+        "type": "array",
+        "nullable": false,
+        "items": {
+          "$ref": "#/components/schemas/StockPublication",
+          "x-origin-$ref": "/openapi/site/stock-cars/models/stock-cars.json#/components/schemas/StockPublication"
+        }
+      },
+      "PublicationProvider": {
+        "title": "PublicationProvider",
+        "description": "Содержит данные о провайдере, а также ссылку на Feed\n",
+        "properties": {
+          "site": {
+            "type": "string",
+            "title": "Название сайта, если имеется",
+            "nullable": true,
+            "example": "kia.ru"
+          },
+          "title": {
+            "type": "string",
+            "title": "Название провайдера",
+            "nullable": false,
+            "example": "CM.expert"
+          },
+          "url": {
+            "title": "Url",
+            "description": "Ссылка на внешний ресурс",
+            "type": "string",
+            "example": "http://example.org/image_1.png",
+            "pattern": "^((ftp|http)s?:\\/\\/)(www\\.)?((\\w+\\.){0,}(\\w+))(\\:\\d{1,5})?(\\/[^\\?#&]{0,})?(\\?(\\w[^\\?#]{0,})?)?(#[^#]{0,})?",
+            "errorMessage": {
+              "pattern": "Некорректная ссылка"
+            },
+            "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/Url"
+          },
+          "defaultStrategy": {
+            "type": "string",
+            "title": "Стратегия публикации по умолчанию (cловарное значение)",
+            "nullable": false,
+            "example": "Всегда"
+          }
+        }
+      },
+      "JsonError": {
+        "type": "object",
+        "description": "Данные об ошибке валидации JSON-структуры",
+        "required": [
+          "originalMessage",
+          "jsonPointer"
+        ],
+        "properties": {
+          "originalMessage": {
+            "description": "Оригинальная ошибка от JSON Schema или другой системы валидации",
+            "type": "string",
+            "example": "Value should match with pattern /^[\\\\wа-яА-Я\\\\-\\\\s]+$/"
+          },
+          "message": {
+            "description": "Человеко-понятное сообщение об ошибке (если было указано)",
+            "type": "string",
+            "example": "Укажите корректную фамилию"
+          },
+          "jsonPointer": {
+            "description": "Путь до атрибута с ошибкой во вложенной структуре JSON-объекта",
+            "type": "string",
+            "example": "#/personalData/profile/name"
+          }
+        }
+      },
+      "PromotionError": {
+        "title": "PromotionError",
+        "description": "Модель ошибки при получении услуги продвижения.\n",
+        "type": "object",
+        "properties": {
+          "message": {
+            "description": "Текст ошибки\n",
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "description": "Тип ошибки unknown - С классифайда пришла ошибка, которую stock-publisher не смог типизировать.  badResponse - Или если мы не можем получить на монолите ответ от stock-publisher: упали по таймауту (400 promotion bad request)\n              Или если мы получили плохой ответ от сток-паблишера (5xx promotion bad response)\nstockCarNotFound - Сток-паблишер не нашел авто в int.api по id notReadyForPublication - Авто стал не готов к публикации: монолит почему-то не отдаёт сток-паблишеру авто concurrencyError - Два пользователя одновременно применяют услугу. Один пользователь применил услугу, а у второго не получилось default - Стандартные ошибки monolith (на фронт вообще тип ошибки не пришел) appliedByPackageTurboSale - Когда дизейблятся связанные услуги с текущей применённой. Например, применяем турбо-продажу, дизейблятся спец и премиум.  alreadyOtherXApplied - Когда применяем х2 на 1 день, дизейблятся остальные услуги Х. appliedByClassified - Когда услуга применена на классифайде, а не через СМЕ. Мы видим, что она применена, но не знаем до какого момента она действует, и не знаем, кто её применил. emptyCredentials - Не заполнены учетные данные для класифайда invalidCredentials - Неверные учетные данные для класифайда classifiedUnavailable - Транспортная ошибка при попытке связи с класифайдом advertNotFound - Авто еще не опубликовано на класифайде notEnoughMoney - Недостаточно средств permissionDenied - Недостаточно прав\n",
+            "type": "string",
+            "default": "default",
+            "enum": [
+              "unknown",
+              "badResponse",
+              "stockCarNotFound",
+              "notReadyForPublication",
+              "concurrencyError",
+              "default",
+              "appliedByPackageTurboSale",
+              "alreadyOtherXApplied",
+              "appliedByClassified",
+              "emptyCredentials",
+              "invalidCredentials",
+              "classifiedUnavailable",
+              "advertNotFound",
+              "notEnoughMoney",
+              "permissionDenied"
+            ]
+          }
+        }
+      },
+      "HttpErrorBadRequest": {
+        "type": "object",
+        "description": "Тело стандартного ответа API при ошибке 400",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string",
+            "example": "Данные имеют неправильный формат"
+          },
+          "type": {
+            "description": "Тип ошибки, который позволяет отличить *синтаксическую ошибку* данных\n(то есть вызванную недоработками в Клиент-приложении),\nот *семантической*.\n\nПредполагается, что Клиент-приложение должно\nвыполнять проверку синтаксического соответствия самостоятельно.\nПоэтому получение синтаксической ошибки с сервера является нештатной\nситуацией, в отличие от семантической, которая является частью процесса\nпользовательского ввода.\n",
+            "type": "string",
+            "enum": [
+              "syntax",
+              "semantic"
+            ],
+            "example": "syntax"
+          },
+          "description": {
+            "description": "Развернутая информация об ошибке",
+            "type": "string",
+            "example": "Смотрите `errors` для получения более подробной\nинформации об ошибках валидации.\n"
+          },
+          "errors": {
+            "description": "Ошибка валидации JSON-структуры",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JsonError",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/JsonError"
+            }
+          },
+          "previous": {
+            "description": "Используется для прокидывания ошибки из другого слоя или другой семантики, например из сток-паблишера\n",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PromotionError",
+                "x-origin-$ref": "/openapi/site/stock-cars/models/promotions.json#/components/schemas/PromotionError"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          }
+        }
+      },
+      "response400": {
+        "description": "Ответ от сервера о некорректности переданных данных",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpErrorBadRequest",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpErrorBadRequest"
+            }
+          }
+        }
+      },
+      "WwwAuthenticate": {
+        "type": "object",
+        "description": "Данные, которые должны возвращаться в\n[WWW-Authenticate при ошибке 401](https://tools.ietf.org/html/rfc7235#section-3.1).\n",
+        "required": [
+          "title",
+          "type",
+          "realm"
+        ],
+        "properties": {
+          "title": {
+            "description": "Заголовок",
+            "type": "string",
+            "example": "Authentication obsoleted"
+          },
+          "type": {
+            "description": "Тип автороизации, которую нужно выполнить",
+            "type": "string",
+            "example": "Bearer"
+          },
+          "realm": {
+            "description": "Тип доступа",
+            "type": "string",
+            "example": "password_grant"
+          }
+        }
+      },
+      "HttpErrorUnauthorized": {
+        "type": "object",
+        "description": "Тело стандартного ответа API при ошибке 401",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string",
+            "example": "Необходимо выполнить авторизацию"
+          },
+          "wwwAuthenticate": {
+            "$ref": "#/components/schemas/WwwAuthenticate",
+            "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/WwwAuthenticate"
+          }
+        }
+      },
+      "response401": {
+        "description": "Ответ от сервера о необходимости авторизоваться",
+        "headers": {
+          "WWW-Authenticate": {
+            "schema": {
+              "description": "Описание условия выполения авторизации",
+              "type": "string",
+              "default": "WWW-Authenticate: Bearer realm=\"password_grant\"",
+              "example": "WWW-Authenticate: Bearer realm=\"password_grant\""
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpErrorUnauthorized",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpErrorUnauthorized"
+            }
+          }
+        }
+      },
+      "HttpErrorForbidden": {
+        "type": "object",
+        "description": "Тело стандартного ответа при ошибке 403",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string",
+            "example": "Доступ к данному разделу API ограничен"
+          },
+          "description": {
+            "description": "Развернутая информация об ошибке",
+            "type": "string",
+            "example": "Доступ к этим данным разрешен только для администраторов.\nОбратитесь к вашему администратору для получения дополнительных прав.\n"
+          }
+        }
+      },
+      "response403": {
+        "description": "Доступ к API или запрашиваемым данным не разрешен",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpErrorForbidden",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpErrorForbidden"
+            }
+          }
+        }
+      },
+      "HttpErrorNotFound": {
+        "type": "object",
+        "description": "Тело стандартного ответа при ошибке 404",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string"
+          },
+          "description": {
+            "description": "Развернутое описание ошибки",
+            "type": "string",
+            "example": "Запрашиваемый ресурс не найден\n"
+          }
+        }
+      },
+      "response404": {
+        "description": "Запрашиваемый ресурс не найден",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpErrorNotFound",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpErrorNotFound"
+            }
+          }
+        }
+      },
+      "HttpServerError": {
+        "type": "object",
+        "description": "Тело стандартного ответа при ошибке 500 Обычно, это ошибка на стороне API\n",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Сообщение об ошибке",
+            "type": "string",
+            "example": "Запрос не может быть обработан из-за внутренних экзистенциальных проблем сервера"
+          }
+        }
+      },
+      "response500": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HttpServerError",
+              "x-origin-$ref": "/openapi/common/models/responses.json#/components/schemas/HttpServerError"
+            }
+          }
+        }
+      },
+      "SalesTactic": {
+        "title": "SalesTactic",
+        "description": "Модель тактики продаж – набор параметров, на которые опирается StockGoalsControl для контроля целевых показателей\n",
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "priceChangesPeriod",
+          "priceChangesIgnorePeriod",
+          "salesPeriod",
+          "isDefault",
+          "control"
+        ],
+        "properties": {
+          "id": {
+            "title": "Числовой идентификатор",
+            "description": "Уникальный идентификатор объекта",
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "example": 5,
+            "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/ObjectId"
+          },
+          "name": {
+            "type": "string",
+            "title": "name",
+            "description": "Название тактики продаж",
+            "example": "CME. Обычная",
+            "nullable": false
+          },
+          "description": {
+            "type": "string",
+            "title": "description",
+            "description": "Стандартная тактика, предлагающая оптимальную скорость продажи и маржу",
+            "example": "CME. Обычная",
+            "nullable": true
+          },
+          "priceChangesPeriod": {
+            "type": "integer",
+            "title": "priceChangesPeriod",
+            "description": "Периодичность пересмотра цены",
+            "example": 7,
+            "nullable": false
+          },
+          "priceChangesIgnorePeriod": {
+            "type": "integer",
+            "title": "priceChangesIgnorePeriod",
+            "description": "Срок до первого пересмотра цены",
+            "example": 7,
+            "nullable": false
+          },
+          "salesPeriod": {
+            "type": "integer",
+            "title": "salesPeriod",
+            "description": "Максимальный срок хранения",
+            "example": 45,
+            "nullable": false
+          },
+          "isDefault": {
+            "type": "boolean",
+            "title": "isDefault",
+            "description": "Тактика по умолчанию",
+            "example": true,
+            "nullable": false
+          },
+          "control": {
+            "type": "string",
+            "title": "Тип контроля",
+            "description": "Выбор значения, опираясь на которое, производится выбор цикла переоценки",
+            "enum": [
+              "inStockPeriod",
+              "publishedDays",
+              "daysOnSale"
+            ],
+            "example": "inStockPeriod",
+            "nullable": false
+          }
+        }
+      },
+      "SalesTacticPeriod": {
+        "title": "SalesTacticPeriod",
+        "description": "Модель описывает определенные настройки контроля целей для определенного периода публикации. С помощью них на разных этапах публикации объявления можно контролировать разные уровни показателей.\n",
+        "type": "object",
+        "required": [
+          "recalculationCycleStart",
+          "recalculationCycleEnd",
+          "sellingPricePercentFrom",
+          "sellingPricePercentTo",
+          "minAttentionPercent"
+        ],
+        "properties": {
+          "recalculationCycleStart": {
+            "type": "integer",
+            "title": "recalculationCycleStart",
+            "description": "Начало цикла переоценки"
+          },
+          "recalculationCycleEnd": {
+            "type": "integer",
+            "title": "recalculationCycleEnd",
+            "description": "Окончание цикла переоценки. Значение должно быть больше чем recalculationCycleStart или null. null оначает, что данный период бессрочный.\n",
+            "nullable": true
+          },
+          "sellingPricePercentFrom": {
+            "type": "integer",
+            "title": "periodFrom",
+            "description": "% цены к рынку от"
+          },
+          "sellingPricePercentTo": {
+            "type": "integer",
+            "title": "sellingPricePercentTo",
+            "description": "% цены к рынку до"
+          },
+          "minAttentionPercent": {
+            "type": "integer",
+            "title": "minAttentionPercent",
+            "description": "Мин. % внимания"
+          }
+        }
+      },
+      "StockDaysGroup": {
+        "title": "Группировка склада по дням",
+        "desctiption": "Группировка склада по дням хранения и публикации используется в отчетах, в частности в «Сводке по складу»",
+        "type": "object",
+        "required": [
+          "daysFrom",
+          "daysTo"
+        ],
+        "properties": {
+          "daysFrom": {
+            "type": "integer",
+            "title": "Начало интервала в днях",
+            "example": 0,
+            "minimum": 0,
+            "nullable": false
+          },
+          "daysTo": {
+            "type": "integer",
+            "title": "Конец интервала в днях",
+            "example": 15,
+            "minimum": 0,
+            "nullable": true
+          }
+        }
+      },
+      "TrackingSettings": {
+        "title": "TrackingSettings",
+        "description": "Содержит данные настроек отслеживания объявлений\n",
+        "type": "object",
+        "required": [
+          "maxPublicationTerm",
+          "minPhotosAmount",
+          "minPhotosAmountForFirstDays",
+          "photosFirstDaysQuantity",
+          "minDescriptionLength",
+          "publicationDelay",
+          "primarySourceId",
+          "stockSource",
+          "maxDaysWithoutCalls",
+          "maxDaysWithoutPresentations",
+          "maxTermWithoutPublication",
+          "maxTermWithoutPrice",
+          "usePrimarySourceData",
+          "useAppraisalData",
+          "descriptionPosition",
+          "descriptionTemplate",
+          "autocompleteDescriptionOnPublish"
+        ],
+        "properties": {
+          "maxPublicationTerm": {
+            "type": "integer",
+            "title": "Максимальный срок публикации",
+            "shortTitle": "Максимальный срок публикации",
+            "nullable": false,
+            "example": 45,
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "minPhotosAmount": {
+            "type": "integer",
+            "title": "Минимальное количество фотографий",
+            "shortTitle": "Минимальное количество фотографий",
+            "nullable": false,
+            "example": 12,
+            "minimum": 0,
+            "maximum": 20
+          },
+          "minPhotosAmountForFirstDays": {
+            "type": "integer",
+            "title": "Минимальное количество фотографий в первое время",
+            "shortTitle": "Минимальное количество фотографий в первое время",
+            "nullable": false,
+            "example": 3,
+            "minimum": 0,
+            "maximum": 20
+          },
+          "photosFirstDaysQuantity": {
+            "type": "integer",
+            "title": "Количество фотографий в первое время",
+            "shortTitle": "Количество фотографий в первое время",
+            "nullable": false,
+            "example": 2,
+            "minimum": 0,
+            "maximum": 14
+          },
+          "minDescriptionLength": {
+            "type": "integer",
+            "title": "Минимальная длина описания",
+            "shortTitle": "Минимальная длина описания",
+            "nullable": false,
+            "example": 200,
+            "minimum": 0,
+            "maximum": 5000
+          },
+          "publicationDelay": {
+            "type": "integer",
+            "title": "Задержка публикации",
+            "shortTitle": "Задержка публикации",
+            "nullable": false,
+            "example": 7,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "primarySourceId": {
+            "type": "integer",
+            "title": "Идентификатор главного сайта",
+            "shortTitle": "Главный сайт",
+            "nullable": true,
+            "example": 1
+          },
+          "stockSource": {
+            "type": "integer",
+            "title": "stockSource",
+            "shortTitle": "stockSource",
+            "nullable": false,
+            "example": 1
+          },
+          "maxDaysWithoutCalls": {
+            "type": "integer",
+            "title": "Максимальное количество дней без звонков",
+            "shortTitle": "Максимальное количество дней без звонков",
+            "nullable": false,
+            "example": 7,
+            "minimum": 0,
+            "maximum": 180
+          },
+          "maxDaysWithoutPresentations": {
+            "type": "integer",
+            "title": "Максимальное количество дней без показов",
+            "shortTitle": "Максимальное количество дней без показов",
+            "nullable": true,
+            "example": 7,
+            "minimum": 0,
+            "maximum": 180
+          },
+          "maxTermWithoutPublication": {
+            "type": "integer",
+            "title": "Максимальный срок хранения без публикации",
+            "shortTitle": "Максимальный срок хранения без публикации",
+            "nullable": false,
+            "example": 72,
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "maxTermWithoutPrice": {
+            "type": "integer",
+            "title": "Максимальный срок хранения без цены",
+            "shortTitle": "Максимальный срок хранения без цены",
+            "nullable": false,
+            "example": 72,
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "usePrimarySourceData": {
+            "type": "boolean",
+            "title": "Использовать информацию по автомобилю из объявлений",
+            "description": "Использовать информацию по автомобилю из объявлений",
+            "example": true
+          },
+          "useAppraisalData": {
+            "type": "boolean",
+            "title": "Использовать информацию по автомобилю из оценок",
+            "description": "Использовать информацию по автомобилю из оценок",
+            "example": true
+          },
+          "descriptionPosition": {
+            "title": "Месторасположение шаблонного описания авто",
+            "shortTitle": "Расположение шаблонного описания",
+            "description": "Расположение шаблонного описания: * `1` – Над описанием * `2` – Под описанием\n",
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ],
+            "example": 2
+          },
+          "descriptionTemplate": {
+            "type": "string",
+            "title": "Шаблонный текст описания авто",
+            "shortTitle": "Шаблонный текст",
+            "nullable": true,
+            "example": "Ставка от 3.5%, Спутник за пол цены, Защитное покрытие Gardex в подарок, Выгодный Trade-in",
+            "maxLength": 2000,
+            "errorMessage": {
+              "maxLength": "Шаблонный текст описания должен быть не более 2000 символов"
+            }
+          },
+          "autocompleteDescriptionOnPublish": {
+            "type": "boolean",
+            "title": "Дополнять описание авто при публикации",
+            "description": "Дополнять описание авто при публикации",
+            "example": false
+          }
+        }
+      },
+      "DealerSource": {
+        "title": "Настройки источников для публикаций",
+        "type": "object",
+        "required": [
+          "id",
+          "advertsAmount",
+          "dealerId",
+          "externalDealerId",
+          "sourceId",
+          "source"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Идентификатор источника",
+            "example": 50
+          },
+          "advertsAmount": {
+            "type": "integer",
+            "title": "Количество опубликованных объявлений",
+            "example": 0
+          },
+          "dealerId": {
+            "type": "integer",
+            "title": "Идентификатор автосалона",
+            "example": 31
+          },
+          "externalDealerId": {
+            "type": "string",
+            "title": "Идентификатор на сайте публикаций",
+            "example": "avanta_ekspert_kolomna"
+          },
+          "sourceId": {
+            "type": "integer",
+            "title": "Идентификатор сайта для публикаций",
+            "example": 1
+          },
+          "source": {
+            "type": "object",
+            "title": "Сайт для публикаций",
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "title": "Идентификатор сайта для публикаций",
+                "example": 1
+              },
+              "name": {
+                "type": "string",
+                "title": "Название сайта для публикаций",
+                "example": "auto.ru"
+              }
+            }
+          }
+        }
+      },
+      "PriceTagSettings": {
+        "title": "PriceTagSettings",
+        "description": "Настройки ценника для печати",
+        "type": "object",
+        "required": [
+          "showEquipment",
+          "showDescription",
+          "showDmsCarId",
+          "showVin",
+          "showSellingPrice",
+          "showDealerPhones",
+          "dealerPhones",
+          "priceTagOrientation",
+          "showCreditMonthlyPayment",
+          "showCreditMonthlyPaymentLarger",
+          "creditPercent",
+          "creditFirstPaymentPercent",
+          "creditDuration",
+          "creditTerms"
+        ],
+        "properties": {
+          "showEquipment": {
+            "title": "Показывать комплектацию",
+            "type": "boolean",
+            "nullable": false
+          },
+          "showDescription": {
+            "title": "Показывать описание",
+            "type": "boolean",
+            "nullable": false
+          },
+          "showDmsCarId": {
+            "title": "Показывать номер на складе",
+            "type": "boolean",
+            "nullable": false
+          },
+          "showVin": {
+            "title": "Показывать VIN",
+            "type": "boolean",
+            "nullable": false
+          },
+          "showSellingPrice": {
+            "title": "Показывать цену продажи",
+            "type": "boolean",
+            "nullable": false
+          },
+          "showDealerPhones": {
+            "title": "Показывать номера телефонов автосалона",
+            "type": "boolean",
+            "nullable": false
+          },
+          "dealerPhones": {
+            "title": "Список номеров телефонов автосалона",
+            "type": "array",
+            "readOnly": true,
+            "items": {
+              "title": "Phone",
+              "description": "Номер телефона в российском формате, маска пропускает следующие форматы:\n* +7(912)2517699\n* 8(912)2517699\n* 7(912)2517699\n* 7-912-251-76-99\n* 8-(912)-251-76-99\n* 9122517699\n* 7(912)-251-7699\n",
+              "type": "string",
+              "pattern": "^((8|\\+8|7|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?(\\d{3}[-\\s]{1}\\d{2}[-\\s]{1}\\d{2}|\\d{3}[-\\s]{1}\\d{1}[-\\s]{1}\\d{3}|\\d{3}[-\\s]{1}\\d{4}|\\d{7})$",
+              "x-origin-$ref": "/openapi/common/models/common-params.json#/components/schemas/Phone"
+            },
+            "example": [
+              88005553535,
+              79214457791
+            ],
+            "nullable": false
+          },
+          "showCreditMonthlyPayment": {
+            "title": "Показывать размер ежемесячного платежа по кредиту",
+            "type": "boolean",
+            "nullable": false
+          },
+          "showCreditMonthlyPaymentLarger": {
+            "title": "Крупно выводить ежемесячный платеж по кредиту",
+            "type": "boolean",
+            "nullable": false
+          },
+          "creditPercent": {
+            "title": "Процентная ставка",
+            "type": "number",
+            "format": "float",
+            "minimum": 0.01,
+            "maximum": 999,
+            "example": 7.7,
+            "nullable": true
+          },
+          "creditFirstPaymentPercent": {
+            "title": "Первоначальный взнос",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99,
+            "example": 50,
+            "nullable": true
+          },
+          "creditDuration": {
+            "title": "Количество месяцев кредитования",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 999,
+            "example": 24,
+            "nullable": true
+          },
+          "creditTerms": {
+            "title": "Условия кредита",
+            "description": "Текст с условиями кредита, максимум 1500 символов",
+            "type": "string",
+            "maxLength": 1500,
+            "nullable": true
+          },
+          "priceTagOrientation": {
+            "title": "Позиционирование ценника",
+            "type": "integer",
+            "nullable": false,
+            "description": "Позиционирование ценника. * `1` – Горизонтальный * `2` – Вертикальный\n",
+            "enum": [
+              1,
+              2
+            ]
+          }
+        }
+      }
+    }
+  }
+}

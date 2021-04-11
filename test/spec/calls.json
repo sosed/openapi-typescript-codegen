@@ -1,0 +1,2250 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "url": "http://lk.cm.local/api/site/"
+    }
+  ],
+  "info": {
+    "title": "Call Tracking Site API",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Звонки"
+    }
+  ],
+  "paths": {
+    "/calls": {
+      "get": {
+        "tags": [
+          "Звонки"
+        ],
+        "summary": "Получение звонков",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "title": "filter",
+              "type": "array",
+              "style": "deepObject",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "title": "sort",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "schema": {
+                "X-Pagination-Total-Count": {
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                "X-Pagination-Page-Count": {
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                "X-Pagination-Current-Page": {
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                "X-Pagination-Per-Page": {
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                "Link": {
+                  "schema": {
+                    "type": "string"
+                  }
+                },
+                "Unique-Total-Count": {
+                  "schema": {
+                    "type": "integer"
+                  }
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "calls",
+                    "entities",
+                    "dictionaryValueMeta"
+                  ],
+                  "properties": {
+                    "calls": {
+                      "title": "Список звонков",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Call",
+                        "nullable": false
+                      },
+                      "nullable": false
+                    },
+                    "entities": {
+                      "type": "object",
+                      "required": null,
+                      "properties": {
+                        "dealers": {
+                          "type": "array",
+                          "nullable": false,
+                          "items": {
+                            "$ref": "#/components/schemas/DealerInfo",
+                            "nullable": false
+                          }
+                        }
+                      },
+                      "nullable": false
+                    },
+                    "dictionaryValueMeta": {
+                      "type": "object",
+                      "properties": {
+                        "goalCar": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^.*$": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/DictionaryValueMeta"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "default": "WWW-Authenticate: Bearer realm=\"password_grant\""
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorUnauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorForbidden"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calls/{id}": {
+      "get": {
+        "tags": [
+          "Звонки"
+        ],
+        "summary": "Получение звонка по его ID",
+        "operationId": "getCallById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Числовой идентификатор",
+              "type": "integer",
+              "maximum": 2147483647,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "call",
+                    "dictionaryValueMeta"
+                  ],
+                  "properties": {
+                    "call": {
+                      "$ref": "#/components/schemas/Call"
+                    },
+                    "dictionaryValueMeta": {
+                      "type": "object",
+                      "properties": {
+                        "goalCar": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^.*$": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/DictionaryValueMeta"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Звонки"
+        ],
+        "operationId": "updateCallById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Числовой идентификатор",
+              "type": "integer",
+              "maximum": 2147483647,
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "call"
+                ],
+                "properties": {
+                  "call": {
+                    "$ref": "#/components/schemas/Call"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "call",
+                    "dictionaryValueMeta"
+                  ],
+                  "properties": {
+                    "call": {
+                      "$ref": "#/components/schemas/Call"
+                    },
+                    "dictionaryValueMeta": {
+                      "type": "object",
+                      "properties": {
+                        "goalCar": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^.*$": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/DictionaryValueMeta"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBadRequest"
+                }
+              }
+            }
+          },
+          "401": {
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "default": "WWW-Authenticate: Bearer realm=\"password_grant\""
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorUnauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorForbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorNotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calls/export": {
+      "get": {
+        "tag": [
+          "Экспорт в excel"
+        ],
+        "summary": "Получение excel файла с отфильтрованными звонками",
+        "required": false,
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "title": "filter",
+              "type": "array",
+              "style": "deepObject",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "title": "sort",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "default": "WWW-Authenticate: Bearer realm=\"password_grant\""
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorUnauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorForbidden"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calls/current-filters": {
+      "get": {
+        "tags": [
+          "Звонки"
+        ],
+        "summary": "Получение информации о доступных фильтрах и выбранных значениях",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/InputFilter"
+                      },
+                      {
+                        "$ref": "#/components/schemas/SelectFilter"
+                      },
+                      {
+                        "$ref": "#/components/schemas/DatePresetFilter"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBadRequest"
+                }
+              }
+            }
+          },
+          "401": {
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "default": "WWW-Authenticate: Bearer realm=\"password_grant\""
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorUnauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorForbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorNotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calls/processing-meta": {
+      "get": {
+        "tags": [
+          "Звонки"
+        ],
+        "summary": "Получение вариантов словарных значений параметров обработки звонка",
+        "operationId": "getCallsProcessingMeta",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "call": {
+                      "type": "object",
+                      "required": [
+                        "responseStatus",
+                        "callDirection",
+                        "reason",
+                        "goalCarMarketSegment",
+                        "goalCarType",
+                        "additionalGoals"
+                      ],
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/DictionaryValueMeta"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBadRequest"
+                }
+              }
+            }
+          },
+          "401": {
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "default": "WWW-Authenticate: Bearer realm=\"password_grant\""
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorUnauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorForbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorNotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calls/get-filter-values": {
+      "post": {
+        "summary": "Получение вариантов значений для указанных в параметрах фильтров",
+        "operationId": "getCallsFilterValues",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Получение вариантов значений",
+                "type": "object",
+                "required": [
+                  "parameters"
+                ],
+                "properties": {
+                  "parameters": {
+                    "title": "Список lazyValuesKey фильтров",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "processedByUsers",
+                        "dealers"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "nullable": false,
+                  "patternProperties": {
+                    "^.*$": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DictionaryValueMeta"
+                      },
+                      "nullable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBadRequest"
+                }
+              }
+            }
+          },
+          "401": {
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "default": "WWW-Authenticate: Bearer realm=\"password_grant\""
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorUnauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorForbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorNotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GoalCar": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "title": "GoalCar",
+            "type": "object",
+            "required": [
+              "brand",
+              "model",
+              "pseudoModel",
+              "creationYear",
+              "vin",
+              "gearType",
+              "sellingPrice",
+              "stockCarId",
+              "mileage",
+              "photoUrl"
+            ],
+            "properties": {
+              "brand": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Марка",
+                    "shortTitle": "Марка",
+                    "type": "integer",
+                    "x-dictionaryValue": true
+                  }
+                ]
+              },
+              "model": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Модель",
+                    "shortTitle": "Модель",
+                    "type": "integer",
+                    "x-dictionaryValue": true
+                  }
+                ]
+              },
+              "pseudoModel": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Псевдо-модель",
+                    "shortTitle": "Псевдо-модель",
+                    "type": "integer",
+                    "x-dictionaryValue": true
+                  }
+                ]
+              },
+              "creationYear": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Год выпуска",
+                    "shortTitle": "Год",
+                    "type": "integer",
+                    "maximum": 2025,
+                    "minimum": 1900
+                  }
+                ]
+              },
+              "vin": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "VIN",
+                    "shortTitle": "VIN",
+                    "type": "string",
+                    "pattern": "^[A-HJ-NPR-Z0-9\\*]{17}$",
+                    "errorMessage": {
+                      "pattern": "Указан некорректный VIN"
+                    }
+                  }
+                ]
+              },
+              "gearType": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Коробка передач",
+                    "shortTitle": "КПП",
+                    "type": "integer",
+                    "x-dictionaryValue": true
+                  }
+                ]
+              },
+              "sellingPrice": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Цена продажи",
+                    "shortTitle": "Цена",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 500000000,
+                    "errorMessage": {
+                      "type": "Цена продажи должна быть целым числом",
+                      "minimum": "Цена продажи не может быть отрицательной",
+                      "maximum": "Цена продажи не может быть больше, чем 100 млн. рублей"
+                    }
+                  }
+                ]
+              },
+              "stockCarId": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Числовой идентификатор",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": 1
+                  }
+                ]
+              },
+              "mileage": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Пробег",
+                    "shortTitle": "Пробег",
+                    "type": "integer",
+                    "maximum": 5000000,
+                    "minimum": 0,
+                    "errorMessage": {
+                      "minimum": "Укажите ненулевое значение параметра"
+                    }
+                  }
+                ]
+              },
+              "photoUrl": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Url",
+                    "type": "string",
+                    "pattern": "^((ftp|http)s?:\\/\\/)(www\\.)?((\\w+\\.){0,}(\\w+))(\\:\\d{1,5})?(\\/[^\\?#&]{0,})?(\\?(\\w[^\\?#]{0,})?)?(#[^#]{0,})?",
+                    "errorMessage": {
+                      "pattern": "Некорректная ссылка"
+                    }
+                  }
+                ]
+              },
+              "color": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Цвет",
+                    "shortTitle": "Цвет",
+                    "type": "integer",
+                    "x-dictionaryValue": true
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "UserInfo": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "title": "UserInfo",
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Числовой идентификатор",
+                "type": "integer",
+                "maximum": 2147483647,
+                "minimum": 1
+              },
+              "phone": {
+                "title": "Phone",
+                "type": "string",
+                "pattern": "^((8|\\+8|7|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?(\\d{3}[-\\s]{1}\\d{2}[-\\s]{1}\\d{2}|\\d{3}[-\\s]{1}\\d{1}[-\\s]{1}\\d{3}|\\d{3}[-\\s]{1}\\d{4}|\\d{7})$"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "readOnly": true
+          }
+        ]
+      },
+      "Call": {
+        "title": "Звонок",
+        "type": "object",
+        "required": [
+          "id",
+          "calledAt",
+          "customerPhoneNumber",
+          "dealerPhoneNumber",
+          "siteSourceName",
+          "dealersIds",
+          "isUnique",
+          "duration",
+          "recordUrl",
+          "goalCar",
+          "processedAt",
+          "processedBy",
+          "processingStatus",
+          "description",
+          "descriptionCreatedAt",
+          "descriptionUpdatedAt",
+          "descriptionCreatedBy",
+          "descriptionUpdatedBy",
+          "connectionDuration",
+          "responseStatus",
+          "callDirection",
+          "reason",
+          "goalCarMarketSegment",
+          "goalCarType",
+          "additionalGoals"
+        ],
+        "properties": {
+          "id": {
+            "descriptions": "Id записи из таблицы call_client_context",
+            "readonly": true,
+            "nullable": false,
+            "title": "Числовой идентификатор",
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1
+          },
+          "calledAt": {
+            "title": "Дата и время звонка",
+            "type": "string",
+            "format": "date-time",
+            "nullable": false
+          },
+          "customerPhoneNumber": {
+            "title": "Номер клиента, с которого совершался звонок",
+            "type": "string",
+            "minLength": 7,
+            "maxLength": 15,
+            "pattern": "^[0-9]{1,}$",
+            "nullable": false
+          },
+          "dealerPhoneNumber": {
+            "title": "Номер автосалона, на который совершался звонок",
+            "type": "string",
+            "minLength": 7,
+            "maxLength": 15,
+            "pattern": "^[0-9]{1,}$",
+            "nullable": false
+          },
+          "siteSourceName": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Классифайд с которого был сделан звонок",
+                "type": "string",
+                "maxLength": 32
+              }
+            ]
+          },
+          "recordUrl": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "URL",
+                "type": "string",
+                "maxLength": 512
+              }
+            ]
+          },
+          "dealersIds": {
+            "title": "Автосалоны",
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "nullable": false
+            },
+            "nullable": false
+          },
+          "isUnique": {
+            "title": "Уникальность",
+            "type": "boolean",
+            "nullable": false
+          },
+          "duration": {
+            "title": "Продолжительность звонка (в секундах)",
+            "type": "integer",
+            "nullable": false
+          },
+          "goalCar": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "GoalCar",
+                "type": "object",
+                "required": [
+                  "brand",
+                  "model",
+                  "pseudoModel",
+                  "creationYear",
+                  "vin",
+                  "gearType",
+                  "sellingPrice",
+                  "stockCarId",
+                  "mileage",
+                  "photoUrl"
+                ],
+                "properties": {
+                  "brand": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Марка",
+                        "shortTitle": "Марка",
+                        "type": "integer",
+                        "x-dictionaryValue": true
+                      }
+                    ]
+                  },
+                  "model": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Модель",
+                        "shortTitle": "Модель",
+                        "type": "integer",
+                        "x-dictionaryValue": true
+                      }
+                    ]
+                  },
+                  "pseudoModel": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Псевдо-модель",
+                        "shortTitle": "Псевдо-модель",
+                        "type": "integer",
+                        "x-dictionaryValue": true
+                      }
+                    ]
+                  },
+                  "creationYear": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Год выпуска",
+                        "shortTitle": "Год",
+                        "type": "integer",
+                        "maximum": 2025,
+                        "minimum": 1900
+                      }
+                    ]
+                  },
+                  "vin": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "VIN",
+                        "shortTitle": "VIN",
+                        "type": "string",
+                        "pattern": "^[A-HJ-NPR-Z0-9\\*]{17}$",
+                        "errorMessage": {
+                          "pattern": "Указан некорректный VIN"
+                        }
+                      }
+                    ]
+                  },
+                  "gearType": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Коробка передач",
+                        "shortTitle": "КПП",
+                        "type": "integer",
+                        "x-dictionaryValue": true
+                      }
+                    ]
+                  },
+                  "sellingPrice": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Цена продажи",
+                        "shortTitle": "Цена",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 500000000,
+                        "errorMessage": {
+                          "type": "Цена продажи должна быть целым числом",
+                          "minimum": "Цена продажи не может быть отрицательной",
+                          "maximum": "Цена продажи не может быть больше, чем 100 млн. рублей"
+                        }
+                      }
+                    ]
+                  },
+                  "stockCarId": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Числовой идентификатор",
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 1
+                      }
+                    ]
+                  },
+                  "mileage": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Пробег",
+                        "shortTitle": "Пробег",
+                        "type": "integer",
+                        "maximum": 5000000,
+                        "minimum": 0,
+                        "errorMessage": {
+                          "minimum": "Укажите ненулевое значение параметра"
+                        }
+                      }
+                    ]
+                  },
+                  "photoUrl": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Url",
+                        "type": "string",
+                        "pattern": "^((ftp|http)s?:\\/\\/)(www\\.)?((\\w+\\.){0,}(\\w+))(\\:\\d{1,5})?(\\/[^\\?#&]{0,})?(\\?(\\w[^\\?#]{0,})?)?(#[^#]{0,})?",
+                        "errorMessage": {
+                          "pattern": "Некорректная ссылка"
+                        }
+                      }
+                    ]
+                  },
+                  "color": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "title": "Цвет",
+                        "shortTitle": "Цвет",
+                        "type": "integer",
+                        "x-dictionaryValue": true
+                      }
+                    ]
+                  }
+                },
+                "$ref": "#/components/schemas/GoalCar"
+              }
+            ]
+          },
+          "processedAt": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "readOnly": true,
+                "title": "UpdatedAt",
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "processedBy": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "readOnly": true,
+                "title": "UserInfo",
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "title": "Числовой идентификатор",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": 1
+                  },
+                  "phone": {
+                    "title": "Phone",
+                    "type": "string",
+                    "pattern": "^((8|\\+8|7|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?(\\d{3}[-\\s]{1}\\d{2}[-\\s]{1}\\d{2}|\\d{3}[-\\s]{1}\\d{1}[-\\s]{1}\\d{3}|\\d{3}[-\\s]{1}\\d{4}|\\d{7})$"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "$ref": "#/components/schemas/UserInfo"
+              }
+            ]
+          },
+          "processingStatus": {
+            "title": "Статус обработки звонка",
+            "nullable": false,
+            "readOnly": true,
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "type": "integer",
+            "x-dictionaryValue": true
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Описание",
+                "type": "string"
+              }
+            ]
+          },
+          "descriptionCreatedAt": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "readOnly": true,
+                "title": "CreatedAt",
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "descriptionUpdatedAt": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "readOnly": true,
+                "title": "UpdatedAt",
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "descriptionCreatedBy": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "readOnly": true,
+                "title": "UserInfo",
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "title": "Числовой идентификатор",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": 1
+                  },
+                  "phone": {
+                    "title": "Phone",
+                    "type": "string",
+                    "pattern": "^((8|\\+8|7|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?(\\d{3}[-\\s]{1}\\d{2}[-\\s]{1}\\d{2}|\\d{3}[-\\s]{1}\\d{1}[-\\s]{1}\\d{3}|\\d{3}[-\\s]{1}\\d{4}|\\d{7})$"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "$ref": "#/components/schemas/UserInfo"
+              }
+            ]
+          },
+          "descriptionUpdatedBy": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "readOnly": true,
+                "title": "UserInfo",
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "title": "Числовой идентификатор",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": 1
+                  },
+                  "phone": {
+                    "title": "Phone",
+                    "type": "string",
+                    "pattern": "^((8|\\+8|7|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?(\\d{3}[-\\s]{1}\\d{2}[-\\s]{1}\\d{2}|\\d{3}[-\\s]{1}\\d{1}[-\\s]{1}\\d{3}|\\d{3}[-\\s]{1}\\d{4}|\\d{7})$"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "$ref": "#/components/schemas/UserInfo"
+              }
+            ]
+          },
+          "connectionDuration": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Время дозвона",
+                "type": "integer",
+                "readOnly": true
+              }
+            ]
+          },
+          "responseStatus": {
+            "title": "Статус ответа",
+            "nullable": false,
+            "readOnly": true,
+            "enum": [
+              1,
+              2
+            ],
+            "type": "integer",
+            "x-dictionaryValue": true
+          },
+          "callDirection": {
+            "title": "Направление звонка",
+            "nullable": false,
+            "readOnly": true,
+            "enum": [
+              1,
+              2
+            ],
+            "x-enum-varnames": [
+              "incoming",
+              "outcoming"
+            ],
+            "x-enum-descriptions": [
+              "Test 123",
+              "Test otm 12341"
+            ],
+            "type": "integer",
+            "x-dictionaryValue": true
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Цель звонка",
+                "enum": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "type": "integer",
+                "x-dictionaryValue": true
+              }
+            ]
+          },
+          "goalCarMarketSegment": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Сегмент рынка ТС",
+                "type": "integer",
+                "x-dictionaryValue": true
+              }
+            ]
+          },
+          "goalCarType": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Желаемый автомобиль",
+                "enum": [
+                  1,
+                  2
+                ],
+                "type": "integer",
+                "x-dictionaryValue": true
+              }
+            ]
+          },
+          "additionalGoals": {
+            "title": "Дополнительные цели",
+            "type": "array",
+            "items": {
+              "nullable": false,
+              "title": "Простое словарное значение",
+              "type": "integer",
+              "x-dictionaryValue": true
+            },
+            "nullable": false
+          }
+        }
+      },
+      "DealerInfo": {
+        "title": "DealerInfo",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Числовой идентификатор",
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "PropertyValue": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "title": "Простое несловарное значение",
+            "anyOf": [
+              {
+                "title": "Числовое значение",
+                "type": "number",
+                "format": "float"
+              },
+              {
+                "title": "Логическое значение",
+                "type": "boolean"
+              },
+              {
+                "title": "Строковое значение",
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "DictionaryValue": {
+        "title": "Простое словарное значение",
+        "type": "integer",
+        "x-dictionaryValue": true
+      },
+      "DictionaryValueComplex": {
+        "title": "ID комплексного параметра",
+        "deprecated": true,
+        "type": "object",
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "anyOf": [
+                {
+                  "title": "Простое словарное значение",
+                  "type": "integer",
+                  "x-dictionaryValue": true
+                },
+                {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "title": "Простое несловарное значение",
+                      "anyOf": [
+                        {
+                          "title": "Числовое значение",
+                          "type": "number",
+                          "format": "float"
+                        },
+                        {
+                          "title": "Логическое значение",
+                          "type": "boolean"
+                        },
+                        {
+                          "title": "Строковое значение",
+                          "type": "string"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "DictionaryValueMeta": {
+        "title": "DictionaryValueMeta",
+        "type": "object",
+        "required": [
+          "value",
+          "title"
+        ],
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "title": "Простое несловарное значение",
+                    "anyOf": [
+                      {
+                        "title": "Числовое значение",
+                        "type": "number",
+                        "format": "float"
+                      },
+                      {
+                        "title": "Логическое значение",
+                        "type": "boolean"
+                      },
+                      {
+                        "title": "Строковое значение",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "title": "Простое словарное значение",
+                "type": "integer",
+                "x-dictionaryValue": true
+              },
+              {
+                "$ref": "#/components/schemas/DictionaryValueComplex"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "WwwAuthenticate": {
+        "type": "object",
+        "required": [
+          "title",
+          "type",
+          "realm"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "realm": {
+            "type": "string"
+          }
+        }
+      },
+      "HttpErrorUnauthorized": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "wwwAuthenticate": {
+            "$ref": "#/components/schemas/WwwAuthenticate"
+          }
+        }
+      },
+      "HttpErrorForbidden": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "HttpServerError": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "JsonError": {
+        "type": "object",
+        "required": [
+          "originalMessage",
+          "jsonPointer"
+        ],
+        "properties": {
+          "originalMessage": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "jsonPointer": {
+            "type": "string"
+          }
+        }
+      },
+      "HttpErrorBadRequest": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "syntax",
+              "semantic"
+            ]
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JsonError"
+            }
+          }
+        }
+      },
+      "HttpErrorNotFound": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Id": {
+        "title": "Уникальный идентификатор фильтруемого поля",
+        "type": "string",
+        "nullable": false
+      },
+      "Name": {
+        "title": "Название фильтруемого поля",
+        "type": "string",
+        "nullable": false
+      },
+      "Placeholder": {
+        "title": "Плейсхолдер",
+        "type": "string",
+        "nullable": false
+      },
+      "Type": {
+        "title": "Тип контрола",
+        "type": "string",
+        "nullable": false,
+        "enum": [
+          "decimal",
+          "phone",
+          "multi-select",
+          "single-select",
+          "date",
+          "date-time",
+          "custom-input",
+          "search",
+          "brand-model"
+        ]
+      },
+      "ShowFilterLabel": {
+        "title": "Показывать лейбл для фильтра",
+        "type": "boolean",
+        "nullable": false
+      },
+      "Min": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "title": "Минимальное значение",
+            "type": "integer"
+          }
+        ]
+      },
+      "Max": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "title": "Максимальное значение",
+            "type": "integer"
+          }
+        ]
+      },
+      "Deviation": {
+        "title": "Девиация значения (плюс/минус)",
+        "type": "integer",
+        "nullable": false
+      },
+      "CurrentState": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "title": "Сохраненное состояние фильтра",
+            "type": "object",
+            "required": [
+              "type",
+              "value"
+            ],
+            "properties": {
+              "type": {
+                "nullable": false,
+                "title": "Операторы сравнения",
+                "type": "string",
+                "enum": [
+                  "eq",
+                  "neq",
+                  "gt",
+                  "gte",
+                  "lt",
+                  "lte",
+                  "in",
+                  "nin",
+                  "like",
+                  "overlaps",
+                  "contains"
+                ]
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FromTo"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DictionaryValueMeta"
+                    }
+                  }
+                ],
+                "nullable": false
+              }
+            }
+          }
+        ]
+      },
+      "FromTo": {
+        "title": "Было - стало",
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              }
+            ]
+          },
+          "to": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "OperationType": {
+        "title": "Тип операции фильтра",
+        "nullable": false,
+        "type": "string",
+        "enum": [
+          "eq",
+          "neq",
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "in",
+          "nin",
+          "like",
+          "overlaps",
+          "contains"
+        ]
+      },
+      "InputFilter": {
+        "title": "InputFilter",
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "placeholder",
+          "type",
+          "step",
+          "unit"
+        ],
+        "properties": {
+          "id": {
+            "title": "Уникальный идентификатор фильтруемого поля",
+            "type": "string",
+            "nullable": false
+          },
+          "name": {
+            "title": "Название фильтруемого поля",
+            "type": "string",
+            "nullable": false
+          },
+          "placeholder": {
+            "title": "Плейсхолдер",
+            "type": "string",
+            "nullable": false
+          },
+          "type": {
+            "enum": [
+              "decimal",
+              "phone",
+              "custom-input",
+              "search",
+              "input-deviation"
+            ],
+            "title": "Тип контрола",
+            "type": "string",
+            "nullable": false
+          },
+          "showFilterLabel": {
+            "title": "Показывать лейбл для фильтра",
+            "type": "boolean",
+            "nullable": false
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Минимальное значение",
+                "type": "integer"
+              }
+            ]
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Максимальное значение",
+                "type": "integer"
+              }
+            ]
+          },
+          "deviation": {
+            "title": "Девиация значения (плюс/минус)",
+            "type": "integer",
+            "nullable": false
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Step",
+                "type": "integer"
+              }
+            ]
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Unit",
+                "type": "string"
+              }
+            ]
+          },
+          "currentState": {
+            "$ref": "#/components/schemas/CurrentState"
+          },
+          "operationType": {
+            "title": "Тип операции фильтра",
+            "nullable": false,
+            "type": "string",
+            "enum": [
+              "eq",
+              "neq",
+              "gt",
+              "gte",
+              "lt",
+              "lte",
+              "in",
+              "nin",
+              "like",
+              "overlaps",
+              "contains"
+            ]
+          }
+        }
+      },
+      "SelectFilter": {
+        "title": "SelectFilter",
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "placeholder",
+          "type",
+          "values",
+          "lazyValuesKey"
+        ],
+        "properties": {
+          "id": {
+            "title": "Уникальный идентификатор фильтруемого поля",
+            "type": "string",
+            "nullable": false
+          },
+          "name": {
+            "title": "Название фильтруемого поля",
+            "type": "string",
+            "nullable": false
+          },
+          "placeholder": {
+            "title": "Плейсхолдер",
+            "type": "string",
+            "nullable": false
+          },
+          "type": {
+            "enum": [
+              "multi-select",
+              "single-select"
+            ],
+            "title": "Тип контрола",
+            "type": "string",
+            "nullable": false
+          },
+          "showFilterLabel": {
+            "title": "Показывать лейбл для фильтра",
+            "type": "boolean",
+            "nullable": false
+          },
+          "isSimple": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Упрощенный тип селекта",
+                "type": "boolean"
+              }
+            ]
+          },
+          "lazyValuesKey": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Имя лениво загружаемого списка",
+                "type": "string"
+              }
+            ]
+          },
+          "values": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Список значений",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DictionaryValueMeta"
+                }
+              }
+            ]
+          },
+          "operationType": {
+            "title": "Тип операции фильтра",
+            "nullable": false,
+            "type": "string",
+            "enum": [
+              "eq",
+              "neq",
+              "gt",
+              "gte",
+              "lt",
+              "lte",
+              "in",
+              "nin",
+              "like",
+              "overlaps",
+              "contains"
+            ]
+          }
+        }
+      },
+      "MinDate": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "title": "Минимальное значение даты",
+            "type": "string"
+          }
+        ]
+      },
+      "MaxDate": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "title": "Максимальное значение даты",
+            "type": "string"
+          }
+        ]
+      },
+      "DatePresetFilter": {
+        "title": "DatePresetFilter",
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "placeholder",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "title": "Уникальный идентификатор фильтруемого поля",
+            "type": "string",
+            "nullable": false
+          },
+          "name": {
+            "title": "Название фильтруемого поля",
+            "type": "string",
+            "nullable": false
+          },
+          "placeholder": {
+            "title": "Плейсхолдер",
+            "type": "string",
+            "nullable": false
+          },
+          "type": {
+            "enum": [
+              "date",
+              "date-time"
+            ],
+            "title": "Тип контрола",
+            "type": "string",
+            "nullable": false
+          },
+          "showFilterLabel": {
+            "title": "Показывать лейбл для фильтра",
+            "type": "boolean",
+            "nullable": false
+          },
+          "minDate": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Минимальное значение даты",
+                "type": "string"
+              }
+            ]
+          },
+          "maxDate": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "Максимальное значение даты",
+                "type": "string"
+              }
+            ]
+          },
+          "currentState": {
+            "$ref": "#/components/schemas/CurrentState"
+          }
+        }
+      }
+    }
+  },
+  "$id": "calls.json"
+}

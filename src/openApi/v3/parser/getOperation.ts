@@ -1,7 +1,10 @@
+import * as _ from 'lodash';
+
 import type { Operation } from '../../../client/interfaces/Operation';
 import type { OperationParameters } from '../../../client/interfaces/OperationParameters';
 import type { OpenApi } from '../interfaces/OpenApi';
 import type { OpenApiOperation } from '../interfaces/OpenApiOperation';
+import { OpenApiParameter } from '../interfaces/OpenApiParameter';
 import type { OpenApiRequestBody } from '../interfaces/OpenApiRequestBody';
 import { getComment } from './getComment';
 import { getOperationErrors } from './getOperationErrors';
@@ -15,13 +18,14 @@ import { getOperationResults } from './getOperationResults';
 import { getRef } from './getRef';
 import { getServiceClassName } from './getServiceClassName';
 import { sortByRequired } from './sortByRequired';
+import { getOperationParameterName } from './getOperationParameterName';
 
 export function getOperation(openApi: OpenApi, url: string, method: string, op: OpenApiOperation, pathParams: OperationParameters): Operation {
     const serviceName = op.tags?.[0] || 'Service';
     const serviceClassName = getServiceClassName(serviceName);
-    const operationNameFallback = `${method}${serviceClassName}`;
+    const operationPath = getCustomOperationPath(url);
+    const operationNameFallback = [_.capitalize(method), _.upperFirst(_.camelCase(operationPath))].join('');
     const operationName = getOperationName(op.operationId || operationNameFallback);
-    const operationPath = getOperationPath(url);
 
     // Create a new operation object for this method.
     const operation: Operation = {
@@ -43,6 +47,11 @@ export function getOperation(openApi: OpenApi, url: string, method: string, op: 
         errors: [],
         results: [],
         responseHeader: null,
+        schema: {
+            response: getOperationSchema(op.responses, '200.content.application/json.schema'),
+            request: getOperationSchema(op.requestBody, 'content.application/json.schema'),
+            params: convertOperationParametersToSchema(op.parameters),
+        },
     };
 
     // Parse the operation parameters (path, query, body, etc).
@@ -82,4 +91,34 @@ export function getOperation(openApi: OpenApi, url: string, method: string, op: 
     }
 
     return operation;
+}
+
+function getCustomOperationPath(path: string): string {
+    return path
+        .replace(/\{(.*?)\}/g, (_, w: string) => {
+            return `{${getOperationParameterName(w)}}`;
+        })
+        .replace('${apiVersion}', '${OpenAPI.VERSION}');
+}
+
+function getOperationSchema(obj: any, path: string): string {
+    return JSON.stringify(_.get(obj, path, null), null, '  ');
+}
+
+function convertOperationParametersToSchema(operations: OpenApiParameter[] | undefined): string | null {
+    if (!operations || _.isEmpty(operations)) {
+        return null;
+    }
+    return JSON.stringify(
+        {
+            type: 'object',
+            required: operations.filter(item => item.required).map(item => item.name),
+            properties: _.zipObject(
+                operations.map(item => item.name),
+                operations.map(item => item.schema)
+            ),
+        },
+        null,
+        '  '
+    );
 }

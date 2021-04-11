@@ -13,4 +13,9 @@ export interface Operation extends OperationParameters {
     errors: OperationError[];
     results: OperationResponse[];
     responseHeader: string | null;
+    schema?: {
+        response: any | null;
+        request: any | null;
+        params: any | null;
+    };
 }

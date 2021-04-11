@@ -1,6 +1,6 @@
 {
-    "name": "openapi-typescript-codegen",
-    "version": "0.9.3",
+    "name": "@cme/openapi-typescript-codegen",
+    "version": "0.9.3-fork.6",
     "description": "Library that generates Typescript clients based on the OpenAPI specification.",
     "author": "Ferdi Koomen",
     "homepage": "https://github.com/ferdikoomen/openapi-typescript-codegen",
@@ -10,6 +10,10 @@
     },
     "bugs": {
         "url": "https://github.com/ferdikoomen/openapi-typescript-codegen/issues"
+    },
+    "publishConfig": {
+        "registry": "https://npm.cm.expert/repository/cmexpert/",
+        "access": "public"
     },
     "license": "MIT",
     "keywords": [
@@ -38,16 +42,15 @@
         "openapi": "bin/index.js"
     },
     "files": [
-        "bin/index.js",
-        "dist/index.js",
-        "types/index.d.ts"
+        "src"
     ],
     "scripts": {
         "clean": "rimraf ./dist ./test/generated ./test/e2e/generated ./samples/generated ./coverage ./node_modules/.cache",
         "build": "rollup --config --environment NODE_ENV:development",
         "build:watch": "rollup --config --environment NODE_ENV:development --watch",
         "release": "rollup --config --environment NODE_ENV:production",
-        "run": "node ./test/index.js",
+        "run": "npm run clean && npm run build && node ./test/index.js",
+        "tsc": "npm run clean && tsc",
         "test": "jest --selectProjects UNIT",
         "test:update": "jest --selectProjects UNIT --updateSnapshot",
         "test:watch": "jest --selectProjects UNIT --watch",
@@ -57,7 +60,6 @@
         "eslint:fix": "eslint \"./src/**/*.ts\" \"./bin/index.js\" \"./types/index.d.ts\" --fix",
         "prettier": "prettier \"./src/**/*.ts\" \"./bin/index.js\" \"./types/index.d.ts\" --check",
         "prettier:fix": "prettier \"./src/**/*.ts\" \"./bin/index.js\" \"./types/index.d.ts\" --write",
-        "prepublish": "yarn run clean && yarn run release",
         "codecov": "codecov --token=66c30c23-8954-4892-bef9-fbaed0a2e42b"
     },
     "dependencies": {
@@ -79,6 +81,7 @@
         "@types/express": "4.17.11",
         "@types/jest": "26.0.22",
         "@types/js-yaml": "4.0.0",
+        "@types/lodash": "^4.14.168",
         "@types/node": "14.14.37",
         "@types/node-fetch": "2.5.9",
         "@types/qs": "6.9.6",
