@@ -7,7 +7,7 @@ export function getEnum(values?: (string | number)[]): Enum[] {
             .filter((value, index, arr) => {
                 return arr.indexOf(value) === index;
             })
-            .filter(isDefined)
+            .filter(value => isDefined(value) && typeof value !== 'object')
             .map(value => {
                 if (typeof value === 'number') {
                     return {

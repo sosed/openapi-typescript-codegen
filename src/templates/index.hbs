@@ -11,11 +11,11 @@ export { OpenAPI } from './core/OpenAPI';
 {{#if enum}}
 export { {{{name}}} } from './models/{{{name}}}';
 {{else if @root.useUnionTypes}}
-export type { {{{name}}} } from './models/{{{name}}}';
+export { {{{name}}} } from './models/{{{name}}}';
 {{else if enums}}
 export { {{{name}}} } from './models/{{{name}}}';
 {{else}}
-export type { {{{name}}} } from './models/{{{name}}}';
+export { {{{name}}} } from './models/{{{name}}}';
 {{/if}}
 {{/each}}
 {{/if}}
@@ -32,7 +32,9 @@ export { ${{{name}}} } from './schemas/${{{name}}}';
 {{#if services}}
 
 {{#each services}}
-export { {{{name}}} } from './services/{{{name}}}';
+    {{#each operations}}
+export * from './services/{{{fileName}}}';
+    {{/each}}
 {{/each}}
 {{/if}}
 {{/if}}

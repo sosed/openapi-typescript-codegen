@@ -10,7 +10,6 @@ import { getComment } from './getComment';
 import { getOperationErrors } from './getOperationErrors';
 import { getOperationName } from './getOperationName';
 import { getOperationParameters } from './getOperationParameters';
-import { getOperationPath } from './getOperationPath';
 import { getOperationRequestBody } from './getOperationRequestBody';
 import { getOperationResponseHeader } from './getOperationResponseHeader';
 import { getOperationResponses } from './getOperationResponses';
@@ -19,13 +18,13 @@ import { getRef } from './getRef';
 import { getServiceClassName } from './getServiceClassName';
 import { sortByRequired } from './sortByRequired';
 import { getOperationParameterName } from './getOperationParameterName';
+import { getServiceFileName } from '../../../utils/writeClientServices';
 
 export function getOperation(openApi: OpenApi, url: string, method: string, op: OpenApiOperation, pathParams: OperationParameters): Operation {
-    const serviceName = op.tags?.[0] || 'Service';
-    const serviceClassName = getServiceClassName(serviceName);
     const operationPath = getCustomOperationPath(url);
     const operationNameFallback = [_.capitalize(method), _.upperFirst(_.camelCase(operationPath))].join('');
     const operationName = _.upperFirst(getOperationName(op.operationId || operationNameFallback));
+    const serviceClassName = getServiceClassName(operationName);
 
     // Create a new operation object for this method.
     const operation: Operation = {
@@ -47,6 +46,7 @@ export function getOperation(openApi: OpenApi, url: string, method: string, op: 
         errors: [],
         results: [],
         responseHeader: null,
+        fileName: getServiceFileName(operationName),
         schema: {
             response: getOperationSchema(op.responses, '200.content.application/json.schema'),
             request: getOperationSchema(op.requestBody, 'content.application/json.schema'),

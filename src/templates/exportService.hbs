@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 
 import { ApiMethodBase } from '@cme/oapi3codegen/angular/api-method.base';
-import { ApiSchema } from '@cme/oapi3codegen/angular/api-schema';
 import {
     SERVERS_INFO,
     ServersInfo
@@ -14,11 +13,11 @@ import { API_ERROR_HANDLER, ApiErrorHandler } from '@cme/oapi3codegen/angular/ev
 
 {{#if imports}}
     {{#each imports}}
-        import type { {{{this}}} } from '../models/{{{this}}}';
+        import { {{{this}}} } from '../models/{{{this}}}';
     {{/each}}
 {{/if}}
 
-import * as domainSchema from './stock-cars.json';
+import * as domainSchema from './{{{jsonFile}}}';
 
 export type {{{name}}}Response = {{>result}};
 
@@ -47,7 +46,7 @@ export type {{{name}}}Request = {
 {{/if}}
  */
 @Injectable()
-export class {{{serviceName}}} extends ApiMethodBase<
+export class {{{service}}} extends ApiMethodBase<
     {{name}}Response,
     {{#if parametersBody}}{{name}}Request{{else}}null{{/if}},
     {{#if parameters}}{{name}}Parameters{{else}}null{{/if}},
@@ -100,7 +99,7 @@ export class {{{serviceName}}} extends ApiMethodBase<
     /**
     * JSON Schemas using for validations at requests.
     */
-    protected get schema(): ApiSchema {
+    protected get schema() {
         return {
             response: {{~#if schema.response~}} {{ schema.response }} {{~else~}} null{{~/if~}},
             request: {{~#if schema.request~}} {{ schema.request }} {{~else~}} null{{~/if~}},

@@ -28,19 +28,17 @@ async function generateV3() {
         exportSchemas: false,
         exportModels: true,
         exportServices: true,
-        request: './test/custom/request.ts',
     });
     await OpenAPI.generate({
         input: './test/spec/calls.json',
         output: './test/generated/calls',
         httpClient: OpenAPI.HttpClient.FETCH,
         useOptions: true,
-        useUnionTypes: false,
+        useUnionTypes: true,
         exportCore: false,
         exportSchemas: false,
         exportModels: true,
         exportServices: true,
-        request: './test/custom/request.ts',
     });
 }
 

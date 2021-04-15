@@ -5,7 +5,6 @@ import { HttpClient } from '../HttpClient';
 import { writeFile } from './fileSystem';
 import { format } from './format';
 import { Templates } from './registerHandlebarTemplates';
-import { getServiceClassName } from '../openApi/v3/parser/getServiceClassName';
 
 const VERSION_TEMPLATE_STRING = 'OpenAPI.VERSION';
 
@@ -22,11 +21,14 @@ export async function writeClientServices(services: Service[], templates: Templa
     for (const service of services) {
         const useVersion = service.operations.some(operation => operation.path.includes(VERSION_TEMPLATE_STRING));
         for (const operation of service.operations) {
-            const fileName = getServiceFileName(operation.name);
-            const file = resolve(outputPath, `${fileName}.ts`);
+            const file = resolve(outputPath, `${operation.fileName}.ts`);
+            const jsonFile = outputPath.replace(/^.*\/([a-z-]+)\/services/g, '$1.json');
+            const schema = operation.schema ? addBaseFileNameToSchema(operation.schema, jsonFile) : {};
             const ctx = {
-                ...operation,
-                serviceName: getServiceClassName(operation.name),
+                ...{
+                    ...operation,
+                    schema: schema,
+                },
                 imports: Array.from(new Set(operation.imports)),
                 queryParams: operation.parameters
                     .filter(item => item.in === 'query')
@@ -35,6 +37,7 @@ export async function writeClientServices(services: Service[], templates: Templa
                 useUnionTypes,
                 useVersion,
                 useOptions,
+                jsonFile,
             };
             const templateResult = templates.exports.service({
                 ...ctx,
@@ -56,4 +59,16 @@ export function getServiceFileName(value: string): string {
         return `${name}.service`;
     }
     return name;
+}
+
+function addBaseFileNameToSchema(schema: Record<string, string>, baseFileName: string): Record<string, string> | null {
+    if (!schema) {
+        return null;
+    }
+    return Object.keys(schema).reduce((acc: Record<string, string>, key) => {
+        if (schema[key]) {
+            acc[key] = schema[key].replace(/"#\/components/g, `"${baseFileName}#/components`);
+        }
+        return acc;
+    }, {});
 }

@@ -21,6 +21,7 @@ export async function writeClientModels(models: Model[], templates: Templates, o
             ...model,
             httpClient,
             useUnionTypes,
+            ctx: JSON.stringify(model, null, '  '),
         });
         await writeFile(file, format(templateResult));
     }
